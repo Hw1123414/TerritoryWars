@@ -82,7 +82,7 @@ public class TerritoryWarsPanel implements ActionListener{
 		//Chat
 		if(evt.getSource()==field){
 			ssm.sendText(strName+": "+field.getText());
-			area.append(strName+": "+field.getText());
+			area.append(strName+": "+field.getText()+"\n");
 			field.setText("");
 		}else if(evt.getSource()==ssm){
 			String strData = ssm.readText();
