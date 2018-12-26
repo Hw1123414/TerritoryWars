@@ -47,6 +47,7 @@ public class TerritoryWarsPanel implements ActionListener{
 			// Show IP input field
 			inputIP.setSize(400,100);
 			inputIP.setLocation(300,600);
+			inputIP.addActionListener(this);
 			panel.add(inputIP);
 			
 		// Input IP
@@ -78,11 +79,6 @@ public class TerritoryWarsPanel implements ActionListener{
 		client.setLocation(700,500);
 		client.addActionListener(this);
 		panel.add(client);
-		
-		inputIP.setSize(400,50);
-		inputIP.setLocation(500,600);
-		inputIP.addActionListener(this);
-		panel.add(inputIP);
 		
 		scroll.setSize(400,400);
 		scroll.setLocation(0,0);
