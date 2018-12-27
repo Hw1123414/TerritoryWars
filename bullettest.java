@@ -3,13 +3,14 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class bullettest implements ActionListener, MouseListener{
-	JFrame f;
-	bulletpanel p;
-	Timer t;
+	JFrame frame;
+	bulletpanel panel;
+	Timer timer;
+	
                    
 	public void actionPerformed(ActionEvent evt){
-		if(evt.getSource() == t){
-			p.repaint();
+		if(evt.getSource() == timer){
+			panel.repaint();
 		}
 	}
 	
@@ -21,13 +22,13 @@ public class bullettest implements ActionListener, MouseListener{
 	public void mousePressed(MouseEvent evt){
 		if(evt.getX()>0 && evt.getX()<1280 && evt.getY()>0 && evt.getY()<720){
 			//Reset Ball (change to reset to player position later)
-			p.dblBulletX=500;
-			p.dblBulletY=500;
+			panel.dblBulletX=500;
+			panel.dblBulletY=500;
 
-			p.dblMouseX=evt.getX();
-			p.dblMouseY=evt.getY();
-			p.blnFire=true;
-			p.blnGetSlope=true;
+			panel.dblMouseX=evt.getX();
+			panel.dblMouseY=evt.getY();
+			panel.blnFire=true;
+			panel.blnGetSlope=true;
 		}
 		
 	}
@@ -36,24 +37,27 @@ public class bullettest implements ActionListener, MouseListener{
 
 	
 	public bullettest(){
-		f = new JFrame("bullet");
-		p = new bulletpanel();
-		p.setLayout(null);
-		p.setPreferredSize(new Dimension(1280,720));
-		p.addMouseListener(this);
+		frame = new JFrame("bullet");
+		panel = new bulletpanel();
+		panel.setLayout(null);
+		panel.setPreferredSize(new Dimension(1280,720));
+		panel.addMouseListener(this);
 		
-		f.setContentPane(p);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setContentPane(panel);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
 		
-		f.pack();
-		f.setVisible(true);
-		
-		t = new Timer(1000/60, this);
-		t.start();
+		timer = new Timer(1000/60, this);
+		timer.start();
 		
 	}
 	
 	public static void main(String[] args){
 		new bullettest();
+		String strMap[][];
+		strMap = new String[32][18];
+		
+		
 	}
 }
