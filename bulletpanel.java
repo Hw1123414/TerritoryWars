@@ -31,7 +31,7 @@ public class bulletpanel extends JPanel{
 	BufferedReader mapdata = null;
 	
 	int intPlayerX = 0;
-	int intPlayerY = 330;
+	int intPlayerY = 370;
 	int intPlayerWidth = 20;
 	int intPlayerHeight = 30;
 	int intPlayerSpeed = 20;
