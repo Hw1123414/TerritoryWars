@@ -5,20 +5,35 @@ import javax.imageio.*;
 import java.awt.image.*;
 
 public class bulletpanel extends JPanel{
+// Variables
+	// General
+	double dblMouseX;
+	double dblMouseY;
+	double dblPlayerX=0;
+	double dblPlayerY=330;
 	
+	// Bullet Travel
 	boolean blnFire=false;
 	double dblBulletX=500;
 	double dblBulletY=500;
-	int intBulletX;
-	int intBulletY;
-	double dblMouseX;
-	double dblMouseY;
-	double dblAngle; //Angle in Radians
+	double dblBulletAngle; //Angle in radians
 	boolean blnGetSlope=true; //to get the slope once per click only
-	double dblRise;
-	double dblRun;
-	int intSpeed=2;
+	double dblBulletRise;
+	double dblBulletRun;
+	int intSpeed=4;
 	
+	// Laser
+	double dblLaserAngle;
+	double dblLaserLength=50;
+	double dblLaserRise;
+	double dblLaserRun;
+	double dblLaserX;
+	double dblLaserY;
+	
+	// Grenade
+	double dblPower=5;
+	
+	// Map
 	BufferedImage wood;
 	BufferedImage sky;
 	int intRow;
@@ -30,23 +45,17 @@ public class bulletpanel extends JPanel{
 	FileReader map = null;
 	BufferedReader mapdata = null;
 	
-	int intPlayerX = 0;
-	int intPlayerY = 370;
+	// Character Movement
 	int intPlayerWidth = 20;
 	int intPlayerHeight = 30;
 	int intPlayerSpeed = 20;
 	boolean blnPlayerRight = false;
 	boolean blnPlayerLeft = false;
 	boolean blnPlayerUp = false;
-	boolean blnPlayerDown = false;
 	
 	boolean blnReadMap = false;
-		
-	public void paintComponent(Graphics g){
-		
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, 1280, 800); 
-		
+	
+	public void paintComponent(Graphics g){		
 		if(blnReadMap == false){
 			strMap = new String[18][32];
 			
@@ -100,46 +109,70 @@ public class bulletpanel extends JPanel{
 
 		// Player 
 		g.setColor(Color.blue);
-		g.fillRect(intPlayerX, intPlayerY, intPlayerWidth, intPlayerHeight);
+		g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
 		
 		if(blnPlayerRight){
-			intPlayerX = intPlayerX + intPlayerSpeed;
+			dblPlayerX = dblPlayerX + intPlayerSpeed;
 		}
 		if(blnPlayerLeft){
-			intPlayerX = intPlayerX - intPlayerSpeed;
+			dblPlayerX = dblPlayerX - intPlayerSpeed;
 		}
 		if(blnPlayerUp){
-			intPlayerY = intPlayerY - intPlayerSpeed;
+			dblPlayerY = dblPlayerY - intPlayerSpeed;
 		}
+		g.setColor(Color.red);
 		
-		// Bullet
+// Draw laser (constant length of dblLaserLength)
+		// Find angle
+		dblLaserAngle = Math.atan2(dblMouseY-dblPlayerY, dblMouseX-dblPlayerX);
+		// Find rise and run using trig
+		dblLaserRise = dblLaserLength*Math.sin(dblLaserAngle);
+		dblLaserRun = dblLaserLength*Math.cos(dblLaserAngle);
+		// Find coordinates of the laser's endpoint
+		dblLaserX = dblPlayerX+dblLaserRun;
+		dblLaserY = dblPlayerY+dblLaserRise;
+		// Draw
+		g.drawLine((int)Math.round(dblPlayerX),(int)Math.round(dblPlayerY),
+		(int)Math.round(dblLaserX),(int)Math.round(dblLaserY));
+		
+		// Fire bullet
+		g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,10,10);
 		if(blnFire){
-			g.setColor(Color.red);
-			intBulletX = (int)dblBulletX;
-			intBulletY = (int)dblBulletY;
-			g.fillOval(intBulletX,intBulletY,10,10);
+			/* Line
 			if(blnGetSlope){
 				/*
-				 * Imaginary Triangle: 
-				 * 	- Hypotenuse: character to crosshair
-				 * 	- Angle between horizontal and the hypotenuse is found using arctangent
-				 * 	- Rise is found using sine
-				 * 	- Run is found using cosine 
-				 *	- This method ensures that the bullet will travel at the same speed at all angles
-				 * 		(hypotenuse is constant for any slope)
-				 */
-				dblAngle=Math.atan2(dblMouseY-dblBulletY, dblMouseX-dblBulletX);
-				dblRise = intSpeed*Math.sin(dblAngle);
-				dblRun = intSpeed*Math.cos(dblAngle);
+				 * Angle between horizontal and the imaginary line (player to cursor) is found using arctangent
+				 * Rise is found using sine
+				 * Run is found using cosine
+				 * Run and rise are added to the x and y values respectively for every frame
+				 * This method ensures that the bullet will travel at the same speed at all angles
+				 * hypotenuse (intSpeed) is constant for any slope
+				 *
+				dblBulletAngle = Math.atan2(dblMouseY-dblBulletY, dblMouseX-dblBulletX);
+				dblBulletRise = intSpeed*Math.sin(dblBulletAngle);
+				dblBulletRun = intSpeed*Math.cos(dblBulletAngle);
 				blnGetSlope=false; //Only get slope again when the next click happens
-			}	
+			}
+			dblBulletX+=dblBulletRun;
+			dblBulletY+=dblBulletRise;
+			*/
+			 
+			if(blnGetSlope){
+				dblBulletAngle = Math.atan2(dblMouseY-dblPlayerY, dblMouseX-dblPlayerX);
+				dblBulletRise = -dblPower*Math.sin(dblBulletAngle);
+				dblBulletRun = dblPower*Math.cos(dblBulletAngle);
+				blnGetSlope=false;
+			}
+			dblBulletX+=dblBulletRun;
+			dblBulletY-=dblBulletRise;
+			dblBulletRise-=0.05;
+
 			
-			dblBulletX+=dblRun;
-			dblBulletY+=dblRise;
-		}		
+		}
 	}
 
 	public bulletpanel(){
 		super();
 	}
+	
 }
