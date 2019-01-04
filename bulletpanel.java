@@ -3,6 +3,10 @@ import java.awt.*;
 import java.io.*;
 import javax.imageio.*;
 import java.awt.image.*;
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 
 public class bulletpanel extends JPanel{
 // Variables
@@ -10,7 +14,7 @@ public class bulletpanel extends JPanel{
 	double dblMouseX;
 	double dblMouseY;
 	double dblPlayerX=0;
-	double dblPlayerY=330;
+	double dblPlayerY=100;
 	
 	// Bullet Travel
 	boolean blnFire=false;
@@ -44,7 +48,8 @@ public class bulletpanel extends JPanel{
 	boolean blnMapFail = false;
 	FileReader map = null;
 	BufferedReader mapdata = null;
-	
+	boolean blnReadMap = false;
+		
 	// Character Movement
 	int intPlayerWidth = 20;
 	int intPlayerHeight = 30;
@@ -53,7 +58,11 @@ public class bulletpanel extends JPanel{
 	boolean blnPlayerLeft = false;
 	boolean blnPlayerUp = false;
 	
-	boolean blnReadMap = false;
+	// New Variables
+	boolean blnPlayerDown = false;
+	BufferedImage screencapture;
+	
+
 	
 	public void paintComponent(Graphics g){		
 		if(blnReadMap == false){
@@ -83,8 +92,7 @@ public class bulletpanel extends JPanel{
 					strMap[intRow][intColumn] = strSplit [intColumn];   
 				}	
 			}
-		}
-		blnReadMap = true;
+
 		for(intRow = 0; intRow < 18; intRow++){
 			for(intColumn = 0; intColumn < 32; intColumn++){
 				if(strMap[intRow][intColumn].equalsIgnoreCase("g")){ // Draw ground
@@ -106,6 +114,24 @@ public class bulletpanel extends JPanel{
 			}
 		}
 		
+			try{
+			 screencapture = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+			}catch(AWTException e){
+				System.out.println("");
+			}
+		
+		}
+		blnReadMap = true;
+
+		// Save as JPEG
+		File file = new File("screencapture.jpg");
+		try{
+			ImageIO.write(screencapture, "jpg", file);
+			
+		}catch(IOException e){
+			System.out.println("Unable to draw map");
+		}
+	
 
 		// Player 
 		g.setColor(Color.blue);
@@ -120,9 +146,14 @@ public class bulletpanel extends JPanel{
 		if(blnPlayerUp){
 			dblPlayerY = dblPlayerY - intPlayerSpeed;
 		}
+		if(blnPlayerDown){
+			dblPlayerY = dblPlayerY + intPlayerSpeed;			
+		}
+		
+		
 		g.setColor(Color.red);
 		
-// Draw laser (constant length of dblLaserLength)
+	// Draw laser (constant length of dblLaserLength)
 		// Find angle
 		dblLaserAngle = Math.atan2(dblMouseY-dblPlayerY, dblMouseX-dblPlayerX);
 		// Find rise and run using trig
@@ -165,9 +196,7 @@ public class bulletpanel extends JPanel{
 			}
 			dblBulletX+=dblBulletRun;
 			dblBulletY-=dblBulletRise;
-			dblBulletRise-=0.05;
-
-			
+			dblBulletRise-=0.05;		
 		}
 	}
 
