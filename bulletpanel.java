@@ -66,7 +66,7 @@ public class bulletpanel extends JPanel{
 	
 	public void paintComponent(Graphics g){		
 		if(blnReadMap == false){
-			strMap = new String[18][32];
+		strMap = new String[18][32];
 			
 			//Read map.csv file
 			try{
@@ -93,46 +93,22 @@ public class bulletpanel extends JPanel{
 				}	
 			}
 
+		}
+		blnReadMap = true;
+
 		for(intRow = 0; intRow < 18; intRow++){
 			for(intColumn = 0; intColumn < 32; intColumn++){
 				if(strMap[intRow][intColumn].equalsIgnoreCase("g")){ // Draw ground
-					try{
-						wood = ImageIO.read(new File("wood.jpg"));
-						g.drawImage(wood, (intColumn*40), (intRow*40), null);
-					}catch(IOException e){
-						System.out.println("Unable to load wood image");
-					}
+					g.drawImage(wood, (intColumn*40), (intRow*40), null);
+					
 					
 				}else if(strMap[intRow][intColumn].equalsIgnoreCase("s")){ // Draw sky
-					try{
-						sky = ImageIO.read(new File("water.jpg"));
-						g.drawImage(sky, (intColumn*40), (intRow*40), null);
-					}catch(IOException e){
-						System.out.println("Unable to load sky image");
-					}
+					g.drawImage(sky, (intColumn*40), (intRow*40), null);
+				
 				}
 			}
 		}
 		
-			try{
-			 screencapture = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-			}catch(AWTException e){
-				System.out.println("");
-			}
-		
-		}
-		blnReadMap = true;
-
-		// Save as JPEG
-		File file = new File("screencapture.jpg");
-		try{
-			ImageIO.write(screencapture, "jpg", file);
-			
-		}catch(IOException e){
-			System.out.println("Unable to draw map");
-		}
-	
-
 		// Player 
 		g.setColor(Color.blue);
 		g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
@@ -202,6 +178,17 @@ public class bulletpanel extends JPanel{
 
 	public bulletpanel(){
 		super();
+		try{
+			wood = ImageIO.read(new File("wood.jpg"));		
+		}catch(IOException e){
+			System.out.println("Unable to load wood image");
+		}
+					
+		try{
+			sky = ImageIO.read(new File("water.jpg"));	
+		}catch(IOException e){
+			System.out.println("Unable to load sky image");
+		}
 	}
 	
 }
