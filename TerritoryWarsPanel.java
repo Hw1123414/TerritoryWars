@@ -71,6 +71,8 @@ public class TerritoryWarsPanel extends JPanel{
 				}
 			}
 			
+			boolean blnFall = false; 
+			
 			// Player 
 			g.setColor(Color.blue);
 			g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
@@ -82,17 +84,26 @@ public class TerritoryWarsPanel extends JPanel{
 			}
 			if(blnPlayerUp){
 				dblPlayerY-=intPlayerSpeed;
+				blnFall = true; 
+				blnPlayerUp = false; 
 			}
 			
-			int intX = (int)Math.round(dblPlayerX);
-			int intY = (int)Math.round(dblPlayerY);  
-			intX = intX/40; 
-			intY = intY/40; 
+			int intX = (int)Math.round(dblPlayerX)/40;
+			int intY = (int)Math.round(dblPlayerY)/40;  
+		
+			try{ 
+				if(strMap[intY+1][intX].equals("s")){	
+					dblPlayerY+=10; 
+				}
 			
-			if(strMap[intY+1][intX].equals("s")){
-				dblPlayerY+=intPlayerSpeed;			
+				else if(strMap[intY][intX].equals("g")){ 
+					blnPlayerUp = true; 
+					blnFall = false;
+				}
 			}
-			else if(strMap[intY+1][intX].equals("g")){ 
+			catch(ArrayIndexOutOfBoundsException e){
+				//Die
+				dblPlayerY+=10; 
 			}
 			
 			

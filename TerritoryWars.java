@@ -30,6 +30,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		if(evt.getSource() == timer){
 			panel.repaint();
 		}
+	
 		// Host button Clicked
 		if(evt.getSource()==host || evt.getSource()==client){
 			if(evt.getSource()==client){
@@ -115,6 +116,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		}
 	}
 	
+	
 	// MouseListener
 	public void mouseExited(MouseEvent evt){}
 	public void mouseEntered(MouseEvent evt){}
@@ -154,7 +156,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	}
 	
 	public void keyPressed(KeyEvent evt){
-		System.out.println("Test");
 		switch(evt.getKeyCode()){
 			case 37: panel.blnPlayerLeft=true;
 				break;
