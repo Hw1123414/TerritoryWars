@@ -87,6 +87,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(OK);
 			panel.remove(namefield);
 			panel.remove(entername);
+			panel.validate();
+			panel.repaint();
 			// Show 'Start Game' button
 			start.setSize(100,50);
 			start.setLocation(580,600);
@@ -97,6 +99,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(hostIP);
 			panel.remove(start);
 			panel.remove(inputIP);
+			panel.validate();
+			panel.repaint();
 			panel.blnStartGame=true;
 		}
 		

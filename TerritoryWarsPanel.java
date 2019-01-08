@@ -47,7 +47,7 @@ public class TerritoryWarsPanel extends JPanel{
 		
 	// Character Movement
 	int intPlayerWidth = 20;
-	int intPlayerHeight = 30;
+	int intPlayerHeight = 40;
 	int intPlayerSpeed = 20;
 	boolean blnPlayerRight = false;
 	boolean blnPlayerLeft = false;
@@ -83,9 +83,18 @@ public class TerritoryWarsPanel extends JPanel{
 			if(blnPlayerUp){
 				dblPlayerY-=intPlayerSpeed;
 			}
-			if(blnPlayerDown){
+			
+			int intX = (int)Math.round(dblPlayerX);
+			int intY = (int)Math.round(dblPlayerY);  
+			intX = intX/40; 
+			intY = intY/40; 
+			
+			if(strMap[intY+1][intX].equals("s")){
 				dblPlayerY+=intPlayerSpeed;			
 			}
+			else if(strMap[intY+1][intX].equals("g")){ 
+			}
+			
 			
 		// Draw laser (constant length of dblLaserLength)
 			g.setColor(Color.red);
