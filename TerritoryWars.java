@@ -23,7 +23,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	JTextField namefield = new JTextField();
 	JLabel enterhostIP = new JLabel("Host IP:");
 	JButton start = new JButton("Start Game");
-	JButton chat = new JButton("Chat"); 
 	Timer timer;
 	
 	
@@ -31,7 +30,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		if(evt.getSource() == timer){
 			panel.repaint();
 		}
-	
+		
+		/*
 		// Host button Clicked
 		if(evt.getSource()==host || evt.getSource()==client){
 			if(evt.getSource()==client){
@@ -89,8 +89,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(OK);
 			panel.remove(namefield);
 			panel.remove(entername);
-			panel.validate();
-			panel.repaint();
 			// Show 'Start Game' button
 			start.setSize(100,50);
 			start.setLocation(580,600);
@@ -101,13 +99,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(hostIP);
 			panel.remove(start);
 			panel.remove(inputIP);
-			panel.validate();
-			panel.repaint();
 			panel.blnStartGame=true;
-			
-			chat.setLocation(1250,700);
-			chat.setSize(30,20); 
-			chat.addActionListener(this);
 		}
 		
 		//Chat
@@ -119,6 +111,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			String strData = ssm.readText();
 			area.append(strData+"\n");
 		}
+		*/
 	}
 	
 	
@@ -138,21 +131,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.blnFire=true;
 			panel.blnGetSlope=true;
 		}
-		if(evt.getSource()==chat){ 
-			panel.add(chat); 
-			
-			if(evt.getSource()==chat){
-			scroll.setSize(400,400);
-			scroll.setLocation(0,0);
-			panel.add(scroll);
-			area.setEnabled(false);
-			
-			field.setSize(400,100);
-			field.setLocation(0,400);
-			field.addActionListener(this);
-			panel.add(field);
-		}
-		}
 	}
 
 	// MouseMotionListener
@@ -166,7 +144,9 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	// KeyListener
 	public void keyReleased(KeyEvent evt){
 		switch(evt.getKeyCode()){
-			case 37: panel.blnPlayerLeft=false;
+			case 37: 
+				panel.blnPlayerLeft=false;
+					
 				break;
 			case 38: panel.blnPlayerUp=false;
 				break;
@@ -176,16 +156,30 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	}
 	
 	public void keyPressed(KeyEvent evt){
-		switch(evt.getKeyCode()){
-			case 37: panel.blnPlayerLeft=true;
-				break;
-			case 38: panel.blnPlayerUp=true;
-				break;
-			case 39: panel.blnPlayerRight=true;
-				break;	
+		
+		if(panel.blnMove){
+			switch(evt.getKeyCode()){
+				case 37: panel.blnPlayerLeft=true;
+					break;
+				case 38: panel.blnPlayerUp=true;
+					break;
+				case 39: panel.blnPlayerRight=true;
+					break;	
+			}
 		}
 		
-		
+		// Chat box
+		if(panel.blnStartGame && evt.getKeyCode()==10){
+			scroll.setSize(400,400);
+			scroll.setLocation(0,0);
+			panel.add(scroll);
+			area.setEnabled(false);
+			
+			field.setSize(400,100);
+			field.setLocation(0,400);
+			field.addActionListener(this);
+			panel.add(field);
+		}
 	}
 	public void keyTyped(KeyEvent evt){}
 	
@@ -194,15 +188,17 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));
 		
+		/*
 		host.setSize(100,50);
 		host.setLocation(500,500);
 		host.addActionListener(this);
-		//panel.add(host);
+		panel.add(host);
 		
 		client.setSize(100,50);
 		client.setLocation(700,500);
 		client.addActionListener(this);
-		//panel.add(client);
+		panel.add(client);
+		*/
 		
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));

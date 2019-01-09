@@ -48,13 +48,19 @@ public class TerritoryWarsPanel extends JPanel{
 	// Character Movement
 	int intPlayerWidth = 20;
 	int intPlayerHeight = 40;
-	int intPlayerSpeed = 5;
+	int intPlayerSpeed = 2;
+	int intPlayerJump = 100;
 	boolean blnPlayerRight = false;
 	boolean blnPlayerLeft = false;
 	boolean blnPlayerUp = false;
 	boolean blnPlayerDown = false;
+	boolean blnMove = true;
 	
 	boolean blnStartGame=true;
+	
+	double dblOrigin = dblPlayerX;
+	
+	int intDisplacement;
 	
 	// Graphics
 	public void paintComponent(Graphics g){	
@@ -70,25 +76,12 @@ public class TerritoryWarsPanel extends JPanel{
 					}
 				}
 			}
-			int intX = (int)Math.round(dblPlayerX)/40;
-			int intY = (int)Math.round(dblPlayerY)/40;  
-		
+			
+			boolean blnFall = false; 
+			
 			// Player 
 			g.setColor(Color.blue);
 			g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
-			try{ 
-				if(strMap[intY+1][intX].equals("s")){	
-					dblPlayerY+=10; 
-					blnPlayerUp = false;
-				}
-			
-				else if(strMap[intY][intX].equals("g")){ 
-				}
-			}
-			catch(ArrayIndexOutOfBoundsException e){
-				//Die
-				dblPlayerY+=10; 
-			}
 			if(blnPlayerRight){
 				dblPlayerX+=intPlayerSpeed;
 			}
@@ -96,9 +89,57 @@ public class TerritoryWarsPanel extends JPanel{
 				dblPlayerX-=intPlayerSpeed;
 			}
 			if(blnPlayerUp){
-				dblPlayerY-=+140; //Change Jumping Height
+				dblPlayerY-=intPlayerJump;
+				blnFall = true; 
+				blnPlayerUp = false; 
 			}
+			
+			int intX = (int)Math.round(dblPlayerX)/40;
+			int intY = (int)Math.round(dblPlayerY)/40;  
 		
+			try{ 
+				if(strMap[intY+1][intX].equals("s")){	
+					dblPlayerY+=10; 
+				}
+			
+				else if(strMap[intY][intX].equals("g")){ 
+					blnPlayerUp = true; 
+					blnFall = false;
+				}
+			}
+			catch(ArrayIndexOutOfBoundsException e){
+				//Die
+				dblPlayerY+=10; 
+			}
+			
+			
+			// Displacement
+			g.setColor(Color.LIGHT_GRAY);
+			g.fillRect(20, 20, 300, 40);
+			
+		
+			
+			intDisplacement = (int)(dblOrigin - dblPlayerX);
+			
+			if(dblOrigin - dblPlayerX < 0){
+				intDisplacement = -(int)(dblOrigin - dblPlayerX);
+			}
+			
+			if(intDisplacement > 300){
+				intDisplacement = 300;
+				blnPlayerLeft = false;
+				blnPlayerRight = false;
+				blnMove = false;
+			} 
+			
+			
+			
+			g.setColor(Color.RED);
+			g.fillRect(20, 20, intDisplacement, 40);
+			
+			
+			
+			
 		// Draw laser (constant length of dblLaserLength)
 			g.setColor(Color.red);
 			// Find angle
