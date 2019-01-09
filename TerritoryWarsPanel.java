@@ -70,7 +70,6 @@ public class TerritoryWarsPanel extends JPanel{
 					}
 				}
 			}
-			boolean blnX; 
 			int intX = (int)Math.round(dblPlayerX)/40;
 			int intY = (int)Math.round(dblPlayerY)/40;  
 		
@@ -97,7 +96,7 @@ public class TerritoryWarsPanel extends JPanel{
 				dblPlayerX-=intPlayerSpeed;
 			}
 			if(blnPlayerUp){
-				dblPlayerY-=+120; //Change Jumping Height
+				dblPlayerY-=+140; //Change Jumping Height
 			}
 		
 		// Draw laser (constant length of dblLaserLength)

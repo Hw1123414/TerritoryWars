@@ -23,6 +23,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	JTextField namefield = new JTextField();
 	JLabel enterhostIP = new JLabel("Host IP:");
 	JButton start = new JButton("Start Game");
+	JButton chat = new JButton("Chat"); 
 	Timer timer;
 	
 	
@@ -103,6 +104,10 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.validate();
 			panel.repaint();
 			panel.blnStartGame=true;
+			
+			chat.setLocation(1250,700);
+			chat.setSize(30,20); 
+			chat.addActionListener(this);
 		}
 		
 		//Chat
@@ -132,6 +137,21 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.dblMouseY=evt.getY();
 			panel.blnFire=true;
 			panel.blnGetSlope=true;
+		}
+		if(evt.getSource()==chat){ 
+			panel.add(chat); 
+			
+			if(evt.getSource()==chat){
+			scroll.setSize(400,400);
+			scroll.setLocation(0,0);
+			panel.add(scroll);
+			area.setEnabled(false);
+			
+			field.setSize(400,100);
+			field.setLocation(0,400);
+			field.addActionListener(this);
+			panel.add(field);
+		}
 		}
 	}
 
@@ -164,18 +184,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			case 39: panel.blnPlayerRight=true;
 				break;	
 		}
-		// Chat box
-		if(panel.blnStartGame && evt.getKeyCode()==10){
-			scroll.setSize(400,400);
-			scroll.setLocation(0,0);
-			panel.add(scroll);
-			area.setEnabled(false);
-			
-			field.setSize(400,100);
-			field.setLocation(0,400);
-			field.addActionListener(this);
-			panel.add(field);
-		}
+		
+		
 	}
 	public void keyTyped(KeyEvent evt){}
 	
@@ -193,7 +203,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		client.setLocation(700,500);
 		client.addActionListener(this);
 		//panel.add(client);
-
+		
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));
 		
