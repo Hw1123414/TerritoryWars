@@ -187,12 +187,12 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		host.setSize(100,50);
 		host.setLocation(500,500);
 		host.addActionListener(this);
-		panel.add(host);
+		//panel.add(host);
 		
 		client.setSize(100,50);
 		client.setLocation(700,500);
 		client.addActionListener(this);
-		panel.add(client);
+		//panel.add(client);
 
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));

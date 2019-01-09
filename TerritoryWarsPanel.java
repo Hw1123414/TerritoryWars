@@ -48,13 +48,13 @@ public class TerritoryWarsPanel extends JPanel{
 	// Character Movement
 	int intPlayerWidth = 20;
 	int intPlayerHeight = 40;
-	int intPlayerSpeed = 20;
+	int intPlayerSpeed = 5;
 	boolean blnPlayerRight = false;
 	boolean blnPlayerLeft = false;
 	boolean blnPlayerUp = false;
 	boolean blnPlayerDown = false;
 	
-	boolean blnStartGame=false;
+	boolean blnStartGame=true;
 	
 	// Graphics
 	public void paintComponent(Graphics g){	
@@ -70,12 +70,26 @@ public class TerritoryWarsPanel extends JPanel{
 					}
 				}
 			}
-			
-			boolean blnFall = false; 
-			
+			boolean blnX; 
+			int intX = (int)Math.round(dblPlayerX)/40;
+			int intY = (int)Math.round(dblPlayerY)/40;  
+		
 			// Player 
 			g.setColor(Color.blue);
 			g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
+			try{ 
+				if(strMap[intY+1][intX].equals("s")){	
+					dblPlayerY+=10; 
+					blnPlayerUp = false;
+				}
+			
+				else if(strMap[intY][intX].equals("g")){ 
+				}
+			}
+			catch(ArrayIndexOutOfBoundsException e){
+				//Die
+				dblPlayerY+=10; 
+			}
 			if(blnPlayerRight){
 				dblPlayerX+=intPlayerSpeed;
 			}
@@ -83,30 +97,9 @@ public class TerritoryWarsPanel extends JPanel{
 				dblPlayerX-=intPlayerSpeed;
 			}
 			if(blnPlayerUp){
-				dblPlayerY-=intPlayerSpeed;
-				blnFall = true; 
-				blnPlayerUp = false; 
+				dblPlayerY-=+120; //Change Jumping Height
 			}
-			
-			int intX = (int)Math.round(dblPlayerX)/40;
-			int intY = (int)Math.round(dblPlayerY)/40;  
 		
-			try{ 
-				if(strMap[intY+1][intX].equals("s")){	
-					dblPlayerY+=10; 
-				}
-			
-				else if(strMap[intY][intX].equals("g")){ 
-					blnPlayerUp = true; 
-					blnFall = false;
-				}
-			}
-			catch(ArrayIndexOutOfBoundsException e){
-				//Die
-				dblPlayerY+=10; 
-			}
-			
-			
 		// Draw laser (constant length of dblLaserLength)
 			g.setColor(Color.red);
 			// Find angle
