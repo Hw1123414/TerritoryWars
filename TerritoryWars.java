@@ -157,16 +157,22 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	
 	public void keyPressed(KeyEvent evt){
 		
-		if(panel.blnMove){
+		
 			switch(evt.getKeyCode()){
-				case 37: panel.blnPlayerLeft=true;
+				case 37:
+				if(panel.intDisplacement < 300 || panel.dblOrigin - panel.dblPlayerX < 0){
+					panel.blnPlayerLeft=true;
 					break;
+				}
 				case 38: panel.blnPlayerUp=true;
 					break;
-				case 39: panel.blnPlayerRight=true;
+				case 39: 
+				if(panel.intDisplacement < 300 || panel.dblOrigin - panel.dblPlayerX > 0){
+					panel.blnPlayerRight=true;
 					break;	
+				}
 			}
-		}
+		
 		
 		// Chat box
 		if(panel.blnStartGame && evt.getKeyCode()==10){

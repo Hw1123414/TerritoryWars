@@ -57,9 +57,9 @@ public class TerritoryWarsPanel extends JPanel{
 	boolean blnMove = true;
 	
 	boolean blnStartGame=true;
-	
 	double dblOrigin = dblPlayerX;
-	
+	int intX;
+	int intY;
 	int intDisplacement;
 	
 	// Graphics
@@ -77,8 +77,6 @@ public class TerritoryWarsPanel extends JPanel{
 				}
 			}
 			
-			boolean blnFall = false; 
-			
 			// Player 
 			g.setColor(Color.blue);
 			g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
@@ -89,35 +87,46 @@ public class TerritoryWarsPanel extends JPanel{
 				dblPlayerX-=intPlayerSpeed;
 			}
 			if(blnPlayerUp){
-				dblPlayerY-=intPlayerJump;
-				blnFall = true; 
+				dblPlayerY-=intPlayerJump; 
 				blnPlayerUp = false; 
 			}
-			
-			int intX = (int)Math.round(dblPlayerX)/40;
-			int intY = (int)Math.round(dblPlayerY)/40;  
+			if(blnPlayerDown){
+				dblPlayerY+=10;
+				blnPlayerDown = false;
+			}
+
+
+			intX = (int)Math.round(dblPlayerX)/40;
+			intY = (int)Math.round(dblPlayerY)/40;  
 		
 			try{ 
 				if(strMap[intY+1][intX].equals("s")){	
-					dblPlayerY+=10; 
+					blnPlayerDown = true;
 				}
 			
 				else if(strMap[intY][intX].equals("g")){ 
 					blnPlayerUp = true; 
-					blnFall = false;
 				}
+				
+				else if(strMap[intY-1][intX].equals("g")){
+					blnPlayerUp = false;
+					blnPlayerDown = true;
+				}
+				
+				
+			//if(intX*40 < dblPlayerX && intX *40 > dblPlayerX+40){
+			//if(intY*40 < dblPlayerY && intY*40 > dblPlayerY+40){
+			
+				
 			}
 			catch(ArrayIndexOutOfBoundsException e){
 				//Die
 				dblPlayerY+=10; 
 			}
 			
-			
 			// Displacement
 			g.setColor(Color.LIGHT_GRAY);
 			g.fillRect(20, 20, 300, 40);
-			
-		
 			
 			intDisplacement = (int)(dblOrigin - dblPlayerX);
 			
@@ -127,18 +136,16 @@ public class TerritoryWarsPanel extends JPanel{
 			
 			if(intDisplacement > 300){
 				intDisplacement = 300;
-				blnPlayerLeft = false;
-				blnPlayerRight = false;
-				blnMove = false;
+				if(dblOrigin - dblPlayerX < 0){
+					blnPlayerRight = false;
+				}else if(dblOrigin - dblPlayerX > 0){
+					blnPlayerLeft = false;
+				}
+
 			} 
-			
-			
-			
+	
 			g.setColor(Color.RED);
 			g.fillRect(20, 20, intDisplacement, 40);
-			
-			
-			
 			
 		// Draw laser (constant length of dblLaserLength)
 			g.setColor(Color.red);
