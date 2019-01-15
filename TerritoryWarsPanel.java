@@ -80,6 +80,8 @@ public class TerritoryWarsPanel extends JPanel{
 			// Player 
 			g.setColor(Color.blue);
 			g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
+			
+			// Movement
 			if(blnPlayerRight){
 				dblPlayerX+=intPlayerSpeed;
 			}
@@ -95,7 +97,17 @@ public class TerritoryWarsPanel extends JPanel{
 				blnPlayerDown = false;
 			}
 
-
+			// Movement restrictions
+			if(dblPlayerX < 0){
+				dblPlayerX = 0;
+			}
+			if(dblPlayerX > (1280 - intPlayerWidth)){
+				dblPlayerX = 1280 - intPlayerWidth;
+			}
+			if(dblPlayerY < 0){
+				dblPlayerY = 0;
+			}
+			
 			intX = (int)Math.round(dblPlayerX)/40;
 			intY = (int)Math.round(dblPlayerY)/40;  
 		
