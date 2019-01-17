@@ -23,15 +23,19 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	JTextField namefield = new JTextField();
 	JLabel enterhostIP = new JLabel("Host IP:");
 	JButton start = new JButton("Start Game");
+	boolean blnChat = false;
+	String strData;
 	Timer timer;
+	
+	JButton stopbut1 = new JButton("Stop");
+	JButton stopbut2 = new JButton("Stop");
 	
 	
 	public void actionPerformed(ActionEvent evt){
 		if(evt.getSource() == timer){
 			panel.repaint();
 		}
-		
-		/*
+
 		// Host button Clicked
 		if(evt.getSource()==host || evt.getSource()==client){
 			if(evt.getSource()==client){
@@ -99,22 +103,64 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(hostIP);
 			panel.remove(start);
 			panel.remove(inputIP);
+			panel.remove(enterhostIP);
 			panel.blnStartGame=true;
 		}
 		
 		//Chat
 		if(evt.getSource()==field){
 			ssm.sendText(strName+": "+field.getText());
+			ssm.sendText(panel.dblPlayerX[panel.intPlayer]+"");
 			area.append(strName+": "+field.getText()+"\n");
-			field.setText("");
-		}else if(evt.getSource()==ssm){
-			String strData = ssm.readText();
-			area.append(strData+"\n");
+			field.setText("");;
 		}
-		*/
+		if(evt.getSource()==ssm){
+			strData = ssm.readText();
+			area.append(strData+"\n");			
+		}
+		
+		//End turn button
+		if(panel.blnStartGame){
+			//Player one stop button
+			stopbut1.setSize(100, 50);
+			stopbut1.setLocation(100,600);
+			stopbut1.addActionListener(this);
+			panel.add(stopbut1);
+			
+			//Player two stop button
+			stopbut2.setSize(100, 50);
+			stopbut2.setLocation(1080,600);
+			stopbut2.addActionListener(this);
+			panel.add(stopbut2);
+		}
+		
+		//Disable opposite player's button
+		if(panel.blnPlayerOne){
+			stopbut1.setEnabled(true);
+			stopbut2.setEnabled(false);
+		}
+		if(panel.blnPlayerTwo){
+			stopbut1.setEnabled(false);
+			stopbut2.setEnabled(true);
+		}
+		
+		//If player one stop button is pressed, switch turns
+		if(evt.getSource() == stopbut1){
+			panel.blnPlayerOne = false;
+			panel.blnPlayerTwo = true;
+			panel.intDisplacement = 0;
+			panel.dblOrigin[0] = panel.dblPlayerX[0];
+		}
+		
+		//If player two stop button is pressed, switch turns
+		if(evt.getSource() == stopbut2){
+			panel.blnPlayerOne = true;
+			panel.blnPlayerTwo = false;
+			panel.intDisplacement = 0;
+			panel.dblOrigin[1] = panel.dblPlayerX[1];
+		}
 	}
-	
-	
+		
 	// MouseListener
 	public void mouseExited(MouseEvent evt){}
 	public void mouseEntered(MouseEvent evt){}
@@ -123,8 +169,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	// When mouse is clicked
 	public void mousePressed(MouseEvent evt){
 		if(evt.getX()>0 && evt.getX()<1280 && evt.getY()>0 && evt.getY()<720){
-			panel.dblBulletX=panel.dblPlayerX;
-			panel.dblBulletY=panel.dblPlayerY;
+			panel.dblBulletX=panel.dblPlayerX[panel.intPlayer];
+			panel.dblBulletY=panel.dblPlayerY[panel.intPlayer];
 
 			panel.dblMouseX=evt.getX();
 			panel.dblMouseY=evt.getY();
@@ -144,38 +190,33 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	// KeyListener
 	public void keyReleased(KeyEvent evt){
 		switch(evt.getKeyCode()){
-			case 37: 
-				panel.blnPlayerLeft=false;
-					
+			case 37: panel.blnPlayerLeft=false;
 				break;
 			case 38: panel.blnPlayerUp=false;
 				break;
 			case 39: panel.blnPlayerRight=false;
 				break;
 		}
+	
 	}
 	
 	public void keyPressed(KeyEvent evt){
 		
-		
-			switch(evt.getKeyCode()){
-				case 37:
-				if(panel.intDisplacement < 300 || panel.dblOrigin - panel.dblPlayerX < 0){
-					panel.blnPlayerLeft=true;
-				}
-				break;
-				
-				case 38: panel.blnPlayerUp=true;
-					break;
-				case 39: 
-				if(panel.intDisplacement < 300 || panel.dblOrigin - panel.dblPlayerX > 0){
-					panel.blnPlayerRight=true;
-				}
-				break;	
-				
+		switch(evt.getKeyCode()){
+			case 37:
+			if(panel.intDisplacement < 300 || panel.dblOrigin[panel.intPlayer] - panel.dblPlayerX[panel.intPlayer] < 0){
+				panel.blnPlayerLeft=true;
 			}
-		
-		
+			break;
+			case 38:panel.blnPlayerUp=true;
+					break;
+			case 39: 
+			if(panel.intDisplacement < 300 || panel.dblOrigin[panel.intPlayer] - panel.dblPlayerX[panel.intPlayer] > 0){
+				panel.blnPlayerRight=true;
+			}
+			break;	
+		}
+
 		// Chat box
 		if(panel.blnStartGame && evt.getKeyCode()==10){
 			scroll.setSize(400,400);
@@ -187,7 +228,12 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			field.setLocation(0,400);
 			field.addActionListener(this);
 			panel.add(field);
+			field.grabFocus();
+			blnChat = true;
 		}
+		
+		
+		
 	}
 	public void keyTyped(KeyEvent evt){}
 	
@@ -196,7 +242,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));
 		
-		/*
 		host.setSize(100,50);
 		host.setLocation(500,500);
 		host.addActionListener(this);
@@ -206,7 +251,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		client.setLocation(700,500);
 		client.addActionListener(this);
 		panel.add(client);
-		*/
 		
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));
@@ -222,9 +266,10 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		timer = new Timer(1000/60, this);
 		timer.start();
+	
 	}
 	
 	// Main method
