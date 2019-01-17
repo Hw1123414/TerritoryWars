@@ -22,10 +22,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	JLabel entername = new JLabel("Your Name:");
 	JTextField namefield = new JTextField();
 	JLabel enterhostIP = new JLabel("Host IP:");
-	JButton sniper = new JButton("Sniper"); 
-	JButton grenade = new JButton("Grenade"); 
-	JButton pistol = new JButton("Pistol"); 
-	JButton rocket = new JButton("Rocket Launcher"); 
 	JButton start = new JButton("Start Game");
 	JButton chat = new JButton("Chat");
 	boolean blnChat = false;
@@ -109,12 +105,20 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(enterhostIP);
 			panel.blnStartGame=true;
 			
+			// Chat button
 			chat.setLocation(1200,680); 
 			chat.setSize(80,40); 
 			chat.addActionListener(this);
 			panel.add(chat);
+			
+			// Stop button
+			stopbut.setSize(100, 50);
+			stopbut.setLocation(600,100);
+			stopbut.addActionListener(this);
+			panel.add(stopbut);
 		}
 		
+		//Chat
 		if(evt.getSource()==chat){
 			if(blnChat==false){ 
 				blnChat=true; 
@@ -135,8 +139,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				panel.requestFocus(); 
 			}
 		}
-		
-		//Chat
+
 		if(evt.getSource()==field){
 			ssm.sendText(strName+": "+field.getText());
 			ssm.sendText(panel.dblPlayerX[panel.intPlayer]+"");
@@ -147,29 +150,23 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			strData = ssm.readText();
 			area.append(strData+"\n");			
 		}
-		
-		//End turn button
-		if(panel.blnStartGame){
-			//Player one stop button
-			stopbut.setSize(100, 50);
-			stopbut.setLocation(540,100);
-			stopbut.addActionListener(this);
-			panel.add(stopbut);
 
+		//If stop button is pressed, switch turns
+		if(evt.getSource() == stopbut){
+			if(panel.blnPlayerOne){
+				panel.blnPlayerOne = false;
+				panel.blnPlayerTwo = true;
+				panel.dblOrigin[0] = panel.dblPlayerX[0];
+			}else if(panel.blnPlayerTwo){
+				panel.blnPlayerOne = true;
+				panel.blnPlayerTwo = false;
+				panel.intDisplacement = 0;
+				panel.dblOrigin[1] = panel.dblPlayerX[1];
+			}
+			panel.intDisplacement = 0;
+			panel.requestFocus(); 
 		}
 		
-		//If player stop button is pressed, switch turns
-		if(evt.getSource() == stopbut && panel.blnPlayerOne){
-			panel.blnPlayerOne = false;
-			panel.blnPlayerTwo = true;
-			panel.intDisplacement = 0;
-			panel.dblOrigin[0] = panel.dblPlayerX[0];
-		}else if(evt.getSource() == stopbut && panel.blnPlayerTwo){
-			panel.blnPlayerTwo = false;
-			panel.blnPlayerOne = true;
-			panel.intDisplacement = 0;
-			panel.dblOrigin[1] = panel.dblPlayerX[1];
-		}
 	}
 		
 	// MouseListener
@@ -203,7 +200,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		switch(evt.getKeyCode()){
 			case 37: panel.blnPlayerLeft=false;
 				break;
-			case 38: panel.blnPlayerUp=false;
+			case 38: 
 				break;
 			case 39: panel.blnPlayerRight=false;
 				break;
@@ -219,7 +216,9 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				panel.blnPlayerLeft=true;
 			}
 			break;
-			case 38:panel.blnPlayerUp=true;
+			case 38:
+				panel.blnPlayerUp=true;
+				panel.blnJump=true;
 					break;
 			case 39: 
 			if(panel.intDisplacement < 300 || panel.dblOrigin[panel.intPlayer] - panel.dblPlayerX[panel.intPlayer] > 0){
@@ -227,6 +226,24 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			}
 			break;	
 		}
+
+		// Chat box
+		if(panel.blnStartGame && evt.getKeyCode()==10){
+			scroll.setSize(400,400);
+			scroll.setLocation(0,0);
+			panel.add(scroll);
+			area.setEnabled(false);
+			
+			field.setSize(400,100);
+			field.setLocation(0,400);
+			field.addActionListener(this);
+			panel.add(field);
+			field.grabFocus();
+			blnChat = true;
+		}
+		
+		
+		
 	}
 	public void keyTyped(KeyEvent evt){}
 	
@@ -247,22 +264,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));
-		
-		sniper.setSize(200,200); 
-		sniper.setLocation(0,520); 
-		sniper.addMouseListener(this); 
-		
-		pistol.setSize(200,200); 
-		pistol.setLocation(0,0); 
-		pistol.addMouseListener(this); 
-		
-		rocket.setSize(200,200); 
-		rocket.setLocation(0,0); 
-		rocket.addMouseListener(this); 
-		
-		grenade.setSize(200,200); 
-		grenade.setLocation(0,0); 
-		grenade.addMouseListener(this); 
 		
 		panel.addMouseListener(this);
 		panel.addMouseMotionListener(this);
