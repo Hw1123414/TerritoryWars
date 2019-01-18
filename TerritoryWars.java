@@ -88,6 +88,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(OK);
 			panel.remove(namefield);
 			panel.remove(entername);
+			panel.validate();
+			panel.repaint();
 			// Get username
 			strName = namefield.getText();
 			// Host
@@ -113,6 +115,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				waiting.setSize(500,50);
 				waiting.setLocation(520,400);
 				panel.add(waiting);
+				panel.validate();
+			panel.repaint();
 			}
 		}
 		// Host Clicks start button
@@ -121,6 +125,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.remove(start);
 			panel.remove(inputIP);
 			panel.remove(enterhostIP);
+			panel.validate();
+			panel.repaint();
 			panel.blnStartGame=true;
 			// Tells client that game has been started
 			ssm.sendText("s");
@@ -149,6 +155,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				panel.remove(scroll); 
 				panel.remove(field); 
 				panel.requestFocus(); 
+				panel.validate();
+			panel.repaint();
 			}
 		}
 		
@@ -182,6 +190,8 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				chat.setSize(80,40); 
 				chat.addActionListener(this);
 				panel.add(chat);
+				panel.validate();
+			panel.repaint();
 			}
 		}
 		
