@@ -227,7 +227,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	
 	// When mouse is clicked
 	public void mousePressed(MouseEvent evt){
-	
+		if(panel.blnFireReady){
 			if(evt.getX()>0 && evt.getX()<1280 && evt.getY()>0 && evt.getY()<720 && (panel.blnGrenade || panel.blnRifle)){
 				panel.dblBulletX=panel.dblPlayerX[panel.intPlayer];
 				panel.dblBulletY=panel.dblPlayerY[panel.intPlayer];
@@ -236,8 +236,10 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				panel.dblMouseY=evt.getY();
 				panel.blnFire=true;
 				panel.blnGetSlope=true;
+				panel.blnFireReady = false;
 				panel.requestFocus();
 			}
+		}
 	}
 
 	// MouseMotionListener
@@ -262,7 +264,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	}
 	
 	public void keyPressed(KeyEvent evt){
-		if(panel.blnMove){
+		if(panel.blnFireReady){
 			switch(evt.getKeyCode()){
 				case 37:
 				if(panel.intDisplacement < 300 || panel.dblOrigin[panel.intPlayer] - panel.dblPlayerX[panel.intPlayer] < 0){

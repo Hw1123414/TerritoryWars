@@ -11,6 +11,7 @@ public class TerritoryWarsPanel extends JPanel{
 	double dblMouseX;
 	double dblMouseY;
 	boolean blnStartGame=false;
+	boolean blnFireReady = true;
 	
 	// Bullet Travel
 	boolean blnFire=false;
@@ -91,11 +92,20 @@ public class TerritoryWarsPanel extends JPanel{
 					}
 				}
 			}
-					
+			
+			// If player one's turn: draw player two's character and health bar	
 			if(blnPlayerOne){
 				intPlayer = 0;
+				//Player two character
 				g.setColor(Color.pink);
 				g.fillRect((int)Math.round(dblPlayerX[1]), (int)Math.round(dblPlayerY[1]), intPlayerWidth, intPlayerHeight);
+				
+				//Player two healthbar
+				g.setColor(Color.red);
+				g.fillRect((int)Math.round(dblPlayerX[1]) - 10, (int)Math.round(dblPlayerY[1]) - 10, (int)dblHealthBarWidth, intHealthBarHeight);			
+				g.setColor(Color.green);
+				g.fillRect((int)Math.round(dblPlayerX[1]) - 10, (int)Math.round(dblPlayerY[1]) - 10, (int)(dblHealth[1]*dblHealthBarMultiplier), intHealthBarHeight);
+			
 				g.setColor(Color.blue);
 				
 				intPlayerTopRow=(int)(dblPlayerY[1]/40);
@@ -115,10 +125,18 @@ public class TerritoryWarsPanel extends JPanel{
 				}			
 			}
 			
+			// If player two's turn: draw player one's character and health bar	
 			if(blnPlayerTwo){
 				intPlayer = 1;
 				g.setColor(Color.blue);
 				g.fillRect((int)Math.round(dblPlayerX[0]), (int)Math.round(dblPlayerY[0]), intPlayerWidth, intPlayerHeight);
+				
+				//Player two healthbar
+				g.setColor(Color.red);
+				g.fillRect((int)Math.round(dblPlayerX[0]) - 10, (int)Math.round(dblPlayerY[0]) - 10, (int)dblHealthBarWidth, intHealthBarHeight);			
+				g.setColor(Color.green);
+				g.fillRect((int)Math.round(dblPlayerX[0]) - 10, (int)Math.round(dblPlayerY[0]) - 10, (int)(dblHealth[0]*dblHealthBarMultiplier), intHealthBarHeight);
+				
 				g.setColor(Color.pink);
 				
 				intPlayerTopRow=(int)(dblPlayerY[0]/40);
@@ -138,27 +156,19 @@ public class TerritoryWarsPanel extends JPanel{
 				}
 				
 			}
-			
-			//40/100
-			dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0];
-			
+		
 			// Player 
 			g.fillRect((int)Math.round(dblPlayerX[intPlayer]), (int)Math.round(dblPlayerY[intPlayer]), intPlayerWidth, intPlayerHeight);
 			g.setColor(Color.red);
 			g.fillRect((int)Math.round(dblPlayerX[intPlayer]) - 10, (int)Math.round(dblPlayerY[intPlayer]) - 10, (int)dblHealthBarWidth, intHealthBarHeight);	
 				
 			g.setColor(Color.green);
-			g.fillRect((int)Math.round(dblPlayerX[intPlayer]) - 10, (int)Math.round(dblPlayerY[intPlayer]) - 10, (int)(dblHealth[0]*dblHealthBarMultiplier), intHealthBarHeight);
-			
-			//Health doesn't update on the bar?
-			System.out.println((int)Math.round(dblHealth[0]));
-			
-			
-			
+			g.fillRect((int)Math.round(dblPlayerX[intPlayer]) - 10, (int)Math.round(dblPlayerY[intPlayer]) - 10, (int)(dblHealth[intPlayer]*dblHealthBarMultiplier), intHealthBarHeight);
+
+			//Health can't drop below 0
 			if(dblHealth[0] <= 0){
 				dblHealth[0] = 0;
 			}
-			
 			
 			// Movement restrictions
 			if(dblPlayerX[intPlayer] <= 0){
@@ -271,7 +281,6 @@ public class TerritoryWarsPanel extends JPanel{
 			
 				
 				if(blnFire){
-					blnMove = false;
 				
 					//Line
 					if(blnGetSlope && blnRifle){					
@@ -315,8 +324,11 @@ public class TerritoryWarsPanel extends JPanel{
 				//CHANGE TO ONCE BULLET LEAVES SCREEN OR HITS SOMETHING
 				//Player can hold a key and shoot!?
 				if(dblBulletX < 0 || dblBulletX > 1280 || dblBulletY < 0 || dblBulletY > 720){
-					blnMove = true;
-				}			
+					blnFireReady = true;
+				}	
+				
+				//Bullet collisions
+						
 		
 		}
 		
@@ -340,7 +352,11 @@ public class TerritoryWarsPanel extends JPanel{
 		dblPlayerX[1] = 1230;
 		dblPlayerY [1] = 100;
 		dblOrigin[1] = dblPlayerX[1];
-		dblHealth[1] = 100;
+		
+		dblHealth[1] = dblHealth[0]; //Both players start with same health
+		
+		//Health bar multiplier (same for both players)
+		dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0];
 		
 		// Load map csv
 		strMap = new String[18][32];
