@@ -71,7 +71,7 @@ public class TerritoryWarsPanel extends JPanel{
 	
 	// Graphics
 	public void paintComponent(Graphics g){	
-		
+		if(blnStartGame){
 			//Draw Map
 			for(intRow = 0; intRow < 18; intRow++){
 				for(intColumn = 0; intColumn < 32; intColumn++){
@@ -227,7 +227,7 @@ public class TerritoryWarsPanel extends JPanel{
 				dblBulletRise-=0.05;		
 			}
 			
-		
+		}
 	}
 
 	public TerritoryWarsPanel(){
