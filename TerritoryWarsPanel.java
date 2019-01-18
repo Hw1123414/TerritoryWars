@@ -329,10 +329,9 @@ public class TerritoryWarsPanel extends JPanel{
 					}	
 								
 				}
-				// Fire bullet, keep drawing unless it hits a player
-				if(blnBulletHit == false){
-					g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,10,10);
-				}
+				// Fire bullet, keep drawing unless it hits a player	
+				g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,10,10);
+				
 				
 				// Once bullet is fired, player can only move after bullet leaves screen
 				// CHANGE TO ONCE BULLET LEAVES SCREEN OR HITS SOMETHING
