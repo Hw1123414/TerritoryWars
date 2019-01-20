@@ -25,8 +25,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	JLabel enterhostIP = new JLabel("Host IP:");
 	JButton sniper = new JButton("Sniper"); 
 	JButton grenade = new JButton("Grenade"); 
-	JButton pistol = new JButton("Pistol"); 
-	JButton rocket = new JButton("Rocket Launcher"); 
 	JButton start = new JButton("Start Game");
 	JButton chat = new JButton("Chat");
 	JButton play = new JButton("Play");
@@ -221,15 +219,38 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				this.strSplit=strData.split(",");
 				panel.intOppX=Integer.parseInt(strSplit[0]);
 				panel.intOppY=Integer.parseInt(strSplit[1]);
-				System.out.println(panel.intOppX+", "+panel.intOppY);
+			//	System.out.println(panel.intOppX+", "+panel.intOppY);
 			// Game Start data
 			}else if(strData.equals("s") && blnHost==false){
 				panel.blnStartGame=true;
 				panel.remove(waiting);
+				
 				chat.setLocation(1200,680); 
 				chat.setSize(80,40); 
 				chat.addActionListener(this);
 				panel.add(chat);
+				
+				// Stop button
+				stopbut.setSize(100, 50);
+				stopbut.setLocation(600,100);
+				stopbut.addActionListener(this);
+				panel.add(stopbut);
+				stopbut.setEnabled(false);
+				
+			 	// sniper button
+				sniper.setSize(100, 50);
+				sniper.setLocation(540, 25);
+				sniper.addActionListener(this);
+				panel.add(sniper);	
+				sniper.setEnabled(false);
+			
+				// Grenade button
+				grenade.setSize(100, 50);
+				grenade.setLocation(640, 25);
+				grenade.addActionListener(this);
+				panel.add(grenade);
+				grenade.setEnabled(false);
+				
 				panel.validate();
 				panel.repaint();
 			}
@@ -238,7 +259,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		
 		// sniper button
 		if(evt.getSource() == sniper){
-			panel.blnsniper = true;
+			panel.blnSniper = true;
 			panel.blnGrenade = false;
 			grenade.setEnabled(false);
 			stopbut.setEnabled(false);
@@ -246,45 +267,37 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		// Grenade button
 		}else if(evt.getSource() == grenade){
 			panel.blnGrenade = true;
-			panel.blnsniper = false;
+			panel.blnSniper = false;
 			sniper.setEnabled(false);
 			stopbut.setEnabled(false);
 			panel.requestFocus();
 		}	
 		
 		if(evt.getSource() == stopbut && blnEndturn == false){
+			panel.blnPlayerLeft = false;
+			panel.blnPlayerRight = false;
 			grenade.setEnabled(true);
 			sniper.setEnabled(true);
 			blnEndturn = true;
+			stopbut.setText("End turn");
 		}
 		
 		// If stop button is pressed, player switch turns
 		else if(evt.getSource() == stopbut && blnEndturn){
-			if(panel.blnPlayerOne){
-				panel.blnPlayerOne = false;
-				panel.dblOrigin[0] = panel.dblPlayerX[0];
-			}else{
-				panel.blnPlayerOne = true;
-				panel.dblOrigin[1] = panel.dblPlayerX[1];
-			}
+			panel.dblOrigin[0] = panel.dblPlayerX[0];
 			panel.intDisplacement = 0;
 			panel.requestFocus(); 
-			panel.blnsniper = false;
+			panel.blnSniper = false;
 			panel.blnGrenade = false;
 			blnEndturn = false;
 			sniper.setEnabled(false);
 			grenade.setEnabled(false);
+			stopbut.setText("End turn");
 		}	
 		
 		if(blnShoot){
 			if(panel.dblBulletX < 0 || panel.dblBulletX > 1280 || panel.dblBulletY < 0 || panel.dblBulletY > 720){
-				if(panel.blnPlayerOne){
-					panel.blnPlayerOne = false;
-					panel.dblOrigin[0] = panel.dblPlayerX[0];
-				}else{
-					panel.blnPlayerOne = true;
-					panel.dblOrigin[1] = panel.dblPlayerX[1];
-				}
+				panel.dblOrigin[0] = panel.dblPlayerX[0];
 				panel.intDisplacement = 0;
 				panel.requestFocus(); 
 				sniper.setEnabled(false); 
@@ -292,8 +305,9 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				stopbut.setEnabled(true);
 				blnShoot = false;
 				blnEndturn = false;
-				panel.blnsniper = false;
+				panel.blnSniper = false;
 				panel.blnGrenade = false;
+				stopbut.setText("End turn");
 			}
 		}
 		
@@ -306,19 +320,21 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	
 	// When mouse is clicked
 	public void mousePressed(MouseEvent evt){
-		if(evt.getX()>0 && evt.getX()<1280 && evt.getY()>0 && evt.getY()<720){
-			panel.dblBulletX=panel.dblPlayerX[0];
-			panel.dblBulletY=panel.dblPlayerY[0];
-			panel.dblMouseX=evt.getX();
-			panel.dblMouseY=evt.getY();
-			panel.blnFire=true;
-			panel.blnGetSlope=true;
-			panel.blnFireReady = false;
-			panel.requestFocus();
-			blnShoot = true;
-			sniper.setEnabled(false); 
-			grenade.setEnabled(false);  
-			stopbut.setEnabled(false);
+		if(panel.blnFireReady){
+			if(evt.getX()>0 && evt.getX()<1280 && evt.getY()>0 && evt.getY()<720  && (panel.blnGrenade || panel.blnSniper)){
+				panel.dblBulletX=panel.dblPlayerX[0];
+				panel.dblBulletY=panel.dblPlayerY[0];
+				panel.dblMouseX=evt.getX();
+				panel.dblMouseY=evt.getY();
+				panel.blnFire=true;
+				panel.blnGetSlope=true;
+				panel.blnFireReady = false;
+				panel.requestFocus();
+				blnShoot = true;
+				sniper.setEnabled(false); 
+				grenade.setEnabled(false);  
+				stopbut.setEnabled(false);
+			}
 		}
 	}
 
@@ -344,20 +360,21 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	}
 	
 	public void keyPressed(KeyEvent evt){
-		
-		switch(evt.getKeyCode()){
-			case 37:
-				if(panel.intDisplacement < 300 || panel.dblOrigin[0] - panel.dblPlayerX[0] < 0){
-					panel.blnPlayerLeft=true;
-				}
-				break;
-			case 38: panel.blnJump=true;
-				break;
-			case 39: 
-				if(panel.intDisplacement < 300 || panel.dblOrigin[0] - panel.dblPlayerX[0] > 0){
-					panel.blnPlayerRight=true;
-				}
-				break;	
+		if(panel.blnFireReady){
+			switch(evt.getKeyCode()){
+				case 37:
+					if(panel.intDisplacement < 300 || panel.dblOrigin[0] - panel.dblPlayerX[0] < 0){
+						panel.blnPlayerLeft=true;
+					}
+					break;
+				case 38: panel.blnJump=true;
+						 break;
+				case 39: 
+					if(panel.intDisplacement < 300 || panel.dblOrigin[0] - panel.dblPlayerX[0] > 0){
+						panel.blnPlayerRight=true;
+					}
+					break;	
+			}
 		}
 	}
 	public void keyTyped(KeyEvent evt){}
@@ -383,14 +400,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		sniper.setSize(200,200); 
 		sniper.setLocation(0,520); 
 		sniper.addMouseListener(this); 
-		
-		pistol.setSize(200,200); 
-		pistol.setLocation(0,0); 
-		pistol.addMouseListener(this); 
-		
-		rocket.setSize(200,200); 
-		rocket.setLocation(0,0); 
-		rocket.addMouseListener(this); 
 		
 		grenade.setSize(200,200); 
 		grenade.setLocation(0,0); 

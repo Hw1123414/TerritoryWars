@@ -3,7 +3,7 @@ import java.awt.*;
 import java.io.*;
 import javax.imageio.*;
 import java.awt.image.*;
-
+//figure out how to fix the shooting, then switch turns and should be all goood
 public class TerritoryWarsPanel extends JPanel{
 	
 // Variables
@@ -22,9 +22,7 @@ public class TerritoryWarsPanel extends JPanel{
 	double dblBulletRun;
 	int intSpeed=4;
 	boolean blnFireReady = true;
-	boolean blnBulletHit;
-	boolean blnDrawBullet;
-	
+
 	// Laser
 	double dblLaserAngle;
 	double dblLaserLength=50;
@@ -65,24 +63,28 @@ public class TerritoryWarsPanel extends JPanel{
 	int intPlayerRightEdgeCol;
 	int intOppX=1200;
 	int intOppY=100;
-	boolean blnsniper = false;
+	boolean blnSniper = false;
 	boolean blnGrenade = false;
 	double dblHealth[];
 	double dblHealthBarWidth = 40;
 	int intHealthBarHeight = 5;
 	double dblHealthBarMultiplier;
+	double dblOppHealth;
 	
 	int intTurn=0;
 	int intDisplacement;
 	boolean blnJump=false;
 	boolean blnHost=true;
 	boolean blnSwitchSides=true;
-	boolean blnPlayerOne = true;
 	
 	// Graphics
 	public void paintComponent(Graphics g){	
+		
+		g.setColor(Color.white);
+		g.fillRect(0,0,1280,800);
+		
 		if(blnStartGame){
-			System.out.println(dblPlayerY[0]);
+		//	System.out.println(dblPlayerY[0]);
 			g.setColor(Color.white);
 			g.fillRect(0,0,1280,800);
 		
@@ -97,6 +99,7 @@ public class TerritoryWarsPanel extends JPanel{
 				}
 			}
 			
+			
 			if(blnSwitchSides && blnHost==false){
 				dblPlayerX[0]=1200;
 				dblOrigin[0]=1200;
@@ -104,11 +107,10 @@ public class TerritoryWarsPanel extends JPanel{
 				blnSwitchSides=false;
 			}
 			
-			
-			
 			// Draw Opponent
+			g.setColor(Color.pink);
 			g.fillRect(intOppX, intOppY, intPlayerWidth, intPlayerHeight);
-			System.out.println(intOppX+", "+intOppY);
+			//System.out.println(intOppX+", "+intOppY);
 			
 			// Draw Own Character (controlled by this computer) 
 			g.setColor(Color.blue);
@@ -116,15 +118,15 @@ public class TerritoryWarsPanel extends JPanel{
 			
 			// Character healthbar
 			g.setColor(Color.red);
-			g.fillRect(intOppX - 10, intOppY - 10, (int)dblHealthBarWidth, intHealthBarHeight);			
+			g.fillRect((int)(Math.round(dblPlayerX[0]) - 10), (int)(Math.round(dblPlayerY[0]) - 10), (int)dblHealthBarWidth, intHealthBarHeight);			
 			g.setColor(Color.green);
-			g.fillRect(intOppX - 10, intOppY - 10, (int)(dblHealth[1]*dblHealthBarMultiplier), intHealthBarHeight);
+			g.fillRect((int)(Math.round(dblPlayerX[0]) - 10), (int)(Math.round(dblPlayerY[0]) - 10), (int)(dblHealth[0]*dblHealthBarMultiplier), intHealthBarHeight);
 			
 			//Opponent healthbar
 			g.setColor(Color.red);
 			g.fillRect(intOppX - 10,intOppY - 10, (int)dblHealthBarWidth, intHealthBarHeight);			
 			g.setColor(Color.green);
-			g.fillRect(intOppX - 10, intOppY - 10, (int)(dblHealth[0]*dblHealthBarMultiplier), intHealthBarHeight);
+			g.fillRect(intOppX - 10, intOppY - 10, (int)(dblOppHealth*dblHealthBarMultiplier), intHealthBarHeight);
 
 			//Health can't drop below 0
 			//**add opponent's
@@ -245,7 +247,7 @@ public class TerritoryWarsPanel extends JPanel{
 			// Fire bullet
 			if(blnFire){
 				// Line
-				if(blnGetSlope && blnsniper){
+				if(blnGetSlope && blnSniper){
 					/*
 					 * Angle between horizontal and the imaginary line (player to cursor) is found using arctangent
 					 * Rise is found using sine
@@ -258,21 +260,24 @@ public class TerritoryWarsPanel extends JPanel{
 					dblBulletRise = intSpeed*Math.sin(dblBulletAngle);
 					dblBulletRun = intSpeed*Math.cos(dblBulletAngle);
 					blnGetSlope=false; //Only get slope again when the next click happens
-				}else if(blnGetSlope && blnGrenade){
+				}
+				if(blnGetSlope && blnGrenade){
 					dblBulletAngle = Math.atan2(dblMouseY-dblPlayerY[0], dblMouseX-dblPlayerX[0]);
 					dblBulletRise = -dblPower*Math.sin(dblBulletAngle);
 					dblBulletRun = dblPower*Math.cos(dblBulletAngle);
 					blnGetSlope=false;
 				}
-				if(blnsniper){
+				if(blnSniper){
 					dblBulletX+=dblBulletRun;
 					dblBulletY+=dblBulletRise;	
+				
 				}
 				if(blnGrenade){
 					dblBulletX+=dblBulletRun;
 					dblBulletY-=dblBulletRise;
 					dblBulletRise-=0.05;
 				}
+			}
 				// Fire bullet, keep drawing unless it hits a player	
 				g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,10,10);
 				
@@ -284,14 +289,12 @@ public class TerritoryWarsPanel extends JPanel{
 				}	
 				
 				//Bullet collisions
-				if(dblBulletX >= dblPlayerX[0] && dblBulletX <= dblPlayerX[0] + intPlayerWidth
-				&& dblBulletY >= dblPlayerY[0] && dblBulletY <= dblPlayerY[0] + intPlayerHeight){
-					//blnBulletHit = true;
-					dblHealth[0] = dblHealth[0] - 5;
-						
+				if(dblBulletX >= intOppX && dblBulletX <= intOppX + intPlayerWidth
+				&& dblBulletY >= intOppY && dblBulletY <= intOppY + intPlayerHeight){
+					dblOppHealth = dblOppHealth - 5;
 				}
 
-			}
+			
 		}
 	}
 
@@ -301,14 +304,14 @@ public class TerritoryWarsPanel extends JPanel{
 		dblPlayerX = new double[3];
 		dblPlayerY = new double[3];
 		dblOrigin = new double[3];
-		dblHealth = new double[2];
+		dblHealth = new double[3];
 		
 		dblPlayerX[0]=50;
-		dblPlayerX[1]=0;
 		dblPlayerY[0]=100;
-		dblPlayerY[1]=100;
 		dblOrigin[0]=dblPlayerX[0]; // Should this be in the loop?
 		dblHealth[0] = 100;
+		
+		dblOppHealth = dblHealth[0]; // Make all starting healths the same
 		
 		dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0];
 		// Load map csv
@@ -342,7 +345,7 @@ public class TerritoryWarsPanel extends JPanel{
 		}
 					
 		try{
-			sky = ImageIO.read(new File("sky.png"));	
+			sky = ImageIO.read(new File("water.jpg"));	
 		}catch(IOException e){
 			System.out.println("Unable to load sky image");
 		}
