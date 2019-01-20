@@ -27,8 +27,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	JButton grenade = new JButton("Grenade"); 
 	JButton start = new JButton("Start Game");
 	JButton chat = new JButton("Chat");
-	JButton play = new JButton("Play");
-	JButton quit = new JButton("Quit");
 	JButton stopbut = new JButton("Stop");
 	String strData;
 	Timer timer;
@@ -37,6 +35,11 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	boolean blnEndturn = false; 
 	boolean blnChat = false;
 	
+	JButton play = new JButton("Play"); 
+	JButton help = new JButton("Help"); 
+	JButton quit = new JButton("Quit");
+	JButton back = new JButton("Back");  
+	boolean blnRemove = false; 
 	
 	public void actionPerformed(ActionEvent evt){
 		if(evt.getSource() == timer){
@@ -46,27 +49,34 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			}
 		}
 		
-		//Play button clicked
-		if(evt.getSource() == play){
-			panel.remove(play);
-			panel.remove(quit);
-			panel.validate();
-			panel.repaint();
-			
-			host.setSize(100,50);
-			host.setLocation(500,500);
-			host.addActionListener(this);
-			panel.add(host);
-			
-			client.setSize(100,50);
-			client.setLocation(700,500);
-			client.addActionListener(this);
+		if(evt.getSource() == play){ 	
+			blnRemove = true;
+			panel.add(back);
+			panel.add(host); 
 			panel.add(client);
 		}
-		
-		//Quit button clicked
-		if(evt.getSource() == quit){
-			 System.exit(0);
+		if(evt.getSource() == help){ 
+			panel.blnHelpMenu = true; 
+			blnRemove = true; 
+			panel.add(back);
+		}
+		if(evt.getSource() == quit){ 
+			System.exit(0);
+		}
+		if(evt.getSource() == back){ 
+			panel.add(play); 
+			panel.add(help); 
+			panel.add(quit); 
+			panel.remove(host); 
+			panel.remove(client); 
+			panel.remove(back); 
+			panel.blnHelpMenu = false; 
+			blnRemove = false; 
+		}
+		if(blnRemove){ 
+			panel.remove(play); 
+			panel.remove(help);
+			panel.remove(quit); 
 		}
 		
 		// Host button Clicked
@@ -387,15 +397,32 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		host.setSize(100,50);
 		host.setLocation(500,500);
 		host.addActionListener(this);
-		panel.add(host);
 		
 		client.setSize(100,50);
 		client.setLocation(700,500);
 		client.addActionListener(this);
-		panel.add(client);
 		
 		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(1280,720));
+		
+		play.setSize(200,50); 
+		play.setLocation(540,335); 
+		play.addActionListener(this); 
+		panel.add(play);
+		
+		help.setSize(200,50);
+		help.setLocation(540,440);  
+		help.addActionListener(this);
+		panel.add(help);
+		
+		quit.setSize(200,50);
+		quit.setLocation(540,545); 
+		quit.addActionListener(this); 
+		panel.add(quit);
+		
+		back.setSize(100,50); 
+		back.setLocation(0,670);; 
+		back.addActionListener(this); 
 		
 		sniper.setSize(200,200); 
 		sniper.setLocation(0,520); 

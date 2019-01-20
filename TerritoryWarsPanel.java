@@ -77,11 +77,21 @@ public class TerritoryWarsPanel extends JPanel{
 	boolean blnHost=true;
 	boolean blnSwitchSides=true;
 	
+	BufferedImage menu;
+	BufferedImage help; 
+	boolean blnHelpMenu = false; 
+	
 	// Graphics
 	public void paintComponent(Graphics g){	
-		
 		g.setColor(Color.white);
 		g.fillRect(0,0,1280,800);
+		
+		if(blnHelpMenu){ 
+			g.drawImage(help,0,0, null);
+		}
+		else{ 
+			g.drawImage(menu,0,0,null); 
+		}
 		
 		if(blnStartGame){
 		//	System.out.println(dblPlayerY[0]);
@@ -348,6 +358,19 @@ public class TerritoryWarsPanel extends JPanel{
 			sky = ImageIO.read(new File("water.jpg"));	
 		}catch(IOException e){
 			System.out.println("Unable to load sky image");
+		}
+		// import main menu 
+		try{ 
+			menu = ImageIO.read(new File("Main Menu.jpg")); 
+		}catch(IOException e){ 
+			System.out.println("Unable to load main menu image"); 
+		}
+		
+		// import help menu 
+		try{ 
+			help = ImageIO.read(new File("Help.jpg")); 
+		}catch(IOException e){ 
+			System.out.println("Unable to load help menu image"); 
 		}
 	}
 	
