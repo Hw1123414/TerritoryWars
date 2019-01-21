@@ -56,7 +56,7 @@ public class TerritoryWarsPanel extends JPanel{
 	BufferedReader grenadedata = null;
 	
 	// Map
-	BufferedImage wood;
+	BufferedImage ground;
 	BufferedImage sky;
 	int intRow;
 	int intColumn;
@@ -96,7 +96,6 @@ public class TerritoryWarsPanel extends JPanel{
 	int intOppBulletX = -50;
 	int intOppBulletY = -50;
 	
-	int intTurn=0;
 	int intDisplacement;
 	boolean blnJump=false;
 	boolean blnHost=true;
@@ -127,7 +126,7 @@ public class TerritoryWarsPanel extends JPanel{
 			for(intRow = 0; intRow < 18; intRow++){
 				for(intColumn = 0; intColumn < 32; intColumn++){
 					if(strMap[intRow][intColumn].equals("g")){ // Draw ground
-						g.drawImage(wood, (intColumn*40), (intRow*40), null);
+						g.drawImage(ground, (intColumn*40), (intRow*40), null);
 					}else if(strMap[intRow][intColumn].equals("s")){ // Draw sky
 						g.drawImage(sky, (intColumn*40), (intRow*40), null);
 					}
@@ -140,7 +139,7 @@ public class TerritoryWarsPanel extends JPanel{
 				intOppX=0;
 				blnSwitchSides=false;
 			}
-			//System.out.println(dblOppHealth);
+			
 			// Draw Opponent
 			g.setColor(Color.pink);
 			g.fillRect(intOppX, intOppY, intPlayerWidth, intPlayerHeight);
@@ -161,10 +160,12 @@ public class TerritoryWarsPanel extends JPanel{
 			g.setColor(Color.green);
 			g.fillRect(intOppX - 10, intOppY - 10, (int)(dblOppHealth*dblHealthBarMultiplier), intHealthBarHeight);
 
-			//Health can't drop below 0
-			//**add opponent's
+			//Healths can't drop below 0
 			if(dblHealth[0] <= 0){
 				dblHealth[0] = 0;
+			}
+			if(dblOppHealth <= 0){
+				dblOppHealth = 0;
 			}
 			
 			// Movement restrictions
@@ -240,8 +241,10 @@ public class TerritoryWarsPanel extends JPanel{
 					}
 				}
 			}
+			// Player dies
 			catch(ArrayIndexOutOfBoundsException e){
-				System.out.println("Player died");
+				dblPlayerY[0] = 1000;
+				dblHealth[0] = 0;
 			}
 			
 			// Displacement
@@ -322,7 +325,8 @@ public class TerritoryWarsPanel extends JPanel{
 					dblBulletRise-=0.05;
 				}
 			}
-							// Fire bullet, keep drawing unless it hits a player	
+			
+			// Fire bullet, keep drawing unless it hits a player	
 			if(blnBulletDisappear==false){
 				g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,intBulletWidth,intBulletHeight);
 			}else{
@@ -330,19 +334,12 @@ public class TerritoryWarsPanel extends JPanel{
 				dblBulletY=-20;
 			}
 			
-			// Once bullet is fired, player can only move after bullet leaves screen
-			if(dblBulletX+intBulletWidth  < 0 || dblBulletX > 1280 || dblBulletY+intBulletHeight < 0 || dblBulletY > 720){
-				blnBulletDisappear=true;
-			}	
-			
 			// Bullet collision
 			//	Touches character
 			if(dblBulletX+intBulletWidth >= intOppX && dblBulletX <= intOppX + intPlayerWidth
 			&& dblBulletY+intBulletHeight >= intOppY && dblBulletY <= intOppY + intPlayerHeight){
 				dblOppHealth-=intBulletDamage;
 				blnBulletDisappear=true;
-				System.out.println(intBulletDamage);
-				
 			}
 			
 			intBulletTopRow=(int)(dblBulletY/40); // Row number of the top of the bullet
@@ -359,13 +356,31 @@ public class TerritoryWarsPanel extends JPanel{
 					blnBulletDisappear=true;	
 				}
 			}
-			catch(ArrayIndexOutOfBoundsException e){}
+			
+			// Bullet out of bounds
+			catch(ArrayIndexOutOfBoundsException e){
+				blnBulletDisappear = true;
+			}
 			
 			// Draw Opponent's bullet
 			g.setColor(Color.RED);
-			g.fillOval(intOppBulletX, intOppBulletY, intBulletWidth, intBulletHeight);
-			
+			g.fillOval(intOppBulletX, intOppBulletY, intBulletWidth, intBulletHeight);	
 		}
+		
+		// Victory/Defeat screens
+		if(dblHealth[0] == 0){
+			g.setColor(Color.black);
+			g.fillRect(0, 0, 1280, 720);
+			g.setColor(Color.red);
+			g.drawString("Defeat", 40, 40);
+		}else if(dblOppHealth == 0){
+			g.setColor(Color.black);
+			g.fillRect(0, 0, 1280, 720);
+			g.setColor(Color.red);
+			g.drawString("Victory", 40, 40);
+		}
+		
+		
 	}
 
 	public TerritoryWarsPanel(){
@@ -417,9 +432,9 @@ public class TerritoryWarsPanel extends JPanel{
 		
 		// Import map images
 		try{
-			wood = ImageIO.read(new File("wood.jpg"));		
+			ground = ImageIO.read(new File("ground.png"));		
 		}catch(IOException e){
-			System.out.println("Unable to load wood image");
+			System.out.println("Unable to load ground image");
 		}
 					
 		try{
