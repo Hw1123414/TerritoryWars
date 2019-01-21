@@ -39,14 +39,12 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	boolean blnShoot = false;
 	boolean blnEndturn = false; 
 	boolean blnChat = false;
-	boolean blnTurn;
-	
 	
 	public void actionPerformed(ActionEvent evt){
 		if(evt.getSource() == timer){
 			panel.repaint();
 			if(panel.blnStartGame){
-				ssm.sendText("p"+(int)Math.round(panel.dblPlayerX[0])+","+(int)Math.round(panel.dblPlayerY[0]));
+				ssm.sendText("p"+(int)Math.round(panel.dblPlayerX)+","+(int)Math.round(panel.dblPlayerY));
 				ssm.sendText("b"+(int)Math.round(panel.dblBulletX)+","+(int)Math.round(panel.dblBulletY));
 				ssm.sendText("h"+(int)Math.round(panel.dblOppHealth));
 			}
@@ -153,10 +151,10 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				start.setLocation(580,600);
 				start.addActionListener(this);
 				panel.add(start);
-				//start.setEnabled(false);
+				start.setEnabled(false);
 				
 				// Host has the first turn
-				blnTurn = true;
+				panel.blnTurn = true;
 				
 			// Client
 			}else{
@@ -171,7 +169,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				ssm.sendText("start");
 				
 				// Client doesn't have first turn
-				blnTurn = false;
+				panel.blnTurn = false;
 			}
 		}
 		// Host Clicks start button
@@ -259,7 +257,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				this.strSplit=strData.split(",");
 				panel.intOppX=Integer.parseInt(strSplit[0]);
 				panel.intOppY=Integer.parseInt(strSplit[1]);
-				System.out.println(panel.intOppX);
+			
 			// Bullet Position data
 			}else if(strData.substring(0,1).equals("b")){
 				strData=strData.substring(1,strData.length());
@@ -269,8 +267,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			// Health Bar data
 			}else if(strData.substring(0,1).equals("h")){
 				strData=strData.substring(1,strData.length());
-				panel.dblHealth[0]=Double.parseDouble(strData);
-				System.out.println(strData);
+				panel.dblHealth=Double.parseDouble(strData);
 			// Game Start data
 			}else if(strData.equals("s") && blnHost==false){
 				panel.blnStartGame=true;
@@ -307,11 +304,11 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				panel.repaint();
 			// For switching turns????
 			}else if(strData.equals("switch")){
-				if(blnTurn){
-					blnTurn = false;
+				if(panel.blnTurn){
+					panel.blnTurn = false;
 					stopbut.setEnabled(false);
 				}else{
-					blnTurn = true;
+					panel.blnTurn = true;
 					stopbut.setEnabled(true);
 				}
 			}
@@ -354,7 +351,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		
 		// If stop button is pressed again, player switch turns
 		else if(evt.getSource() == stopbut && blnEndturn){
-			panel.dblOrigin[0] = panel.dblPlayerX[0];
+			panel.dblOrigin = panel.dblPlayerX;
 			panel.intDisplacement = 0;
 			panel.requestFocus(); 
 			panel.blnSniper = false;
@@ -365,11 +362,11 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			stopbut.setText("Stop");
 			panel.requestFocus();
 			ssm.sendText("switch");
-			if(blnTurn){
-					blnTurn = false;
+			if(panel.blnTurn){
+					panel.blnTurn = false;
 					stopbut.setEnabled(false);
 				}else{
-					blnTurn = true;
+					panel.blnTurn = true;
 					stopbut.setEnabled(true);
 				}
 		}	
@@ -377,7 +374,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 		// Switch turns if player shoots and the bullet disappears
 		if(blnShoot){
 			if(panel.blnBulletDisappear){
-				panel.dblOrigin[0] = panel.dblPlayerX[0];
+				panel.dblOrigin = panel.dblPlayerX;
 				panel.intDisplacement = 0;
 				panel.requestFocus(); 
 				sniper.setEnabled(false); 
@@ -390,11 +387,11 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				stopbut.setText("Stop");
 				ssm.sendText("switch");
 				panel.setCursor(Cursor.getDefaultCursor());
-				if(blnTurn){
-					blnTurn = false;
+				if(panel.blnTurn){
+					panel.blnTurn = false;
 					stopbut.setEnabled(false);
 				}else{
-					blnTurn = true;
+					panel.blnTurn = true;
 					stopbut.setEnabled(true);
 				}
 			}
@@ -409,11 +406,11 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	
 	// When mouse is clicked
 	public void mousePressed(MouseEvent evt){
-		if(blnTurn){
+		if(panel.blnTurn){
 			if(panel.blnBulletDisappear){
 				if(evt.getX()>0 && evt.getX()<1280 && evt.getY()>0 && evt.getY()<720  && (panel.blnGrenade || panel.blnSniper)){
-					panel.dblBulletX=panel.dblPlayerX[0];
-					panel.dblBulletY=panel.dblPlayerY[0];
+					panel.dblBulletX=panel.dblPlayerX;
+					panel.dblBulletY=panel.dblPlayerY;
 					panel.dblMouseX=evt.getX();
 					panel.dblMouseY=evt.getY();
 					panel.blnFire=true;
@@ -451,18 +448,18 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 	}
 	
 	public void keyPressed(KeyEvent evt){
-		if(blnTurn){
+		if(panel.blnTurn){
 			if(blnEndturn ==false && panel.blnBulletDisappear && panel.blnSniper == false && panel.blnGrenade == false){
 				switch(evt.getKeyCode()){
 					case 37:
-						if(panel.intDisplacement < 300 || panel.dblOrigin[0] - panel.dblPlayerX[0] < 0){
+						if(panel.intDisplacement < 300 || panel.dblOrigin - panel.dblPlayerX < 0){
 							panel.blnPlayerLeft=true;
 						}
 						break;
 					case 38: panel.blnJump=true;
 							 break;
 					case 39: 
-						if(panel.intDisplacement < 300 || panel.dblOrigin[0] - panel.dblPlayerX[0] > 0){
+						if(panel.intDisplacement < 300 || panel.dblOrigin - panel.dblPlayerX > 0){
 							panel.blnPlayerRight=true;
 						}
 						break;	

@@ -67,9 +67,9 @@ public class TerritoryWarsPanel extends JPanel{
 	BufferedReader mapdata = null;
 		
 	// Character Movement
-	double dblPlayerX[];
-	double dblPlayerY[];
-	double dblOrigin[];
+	double dblPlayerX = 50;
+	double dblPlayerY = 100;
+	double dblOrigin = dblPlayerX;
 	int intPlayerWidth = 20;
 	int intPlayerHeight = 40;
 	int intPlayerSpeed = 2;
@@ -84,13 +84,13 @@ public class TerritoryWarsPanel extends JPanel{
 	int intPlayerRightEdgeCol;
 	boolean blnSniper = false;
 	boolean blnGrenade = false;
-	double dblHealth[];
+	double dblHealth = 100;
 	double dblHealthBarWidth = 40;
 	int intHealthBarHeight = 5;
-	double dblHealthBarMultiplier;
+	double dblHealthBarMultiplier = dblHealthBarWidth/dblHealth;
 	
 	//Opponent
-	double dblOppHealth;
+	double dblOppHealth = 100;
 	int intOppX=1200;
 	int intOppY=100;
 	int intOppBulletX = -50;
@@ -103,8 +103,9 @@ public class TerritoryWarsPanel extends JPanel{
 	
 	BufferedImage menu;
 	BufferedImage help; 
-	boolean blnHelpMenu = false; 
-	boolean blnShowCursor;
+	boolean blnHelpMenu = false;
+	boolean blnTurn;
+	
 	// Graphics
 	public void paintComponent(Graphics g){	
 		
@@ -134,8 +135,8 @@ public class TerritoryWarsPanel extends JPanel{
 			}
 			
 			if(blnSwitchSides && blnHost==false){
-				dblPlayerX[0]=1200;
-				dblOrigin[0]=1200;
+				dblPlayerX=1200;
+				dblOrigin=1200;
 				intOppX=0;
 				blnSwitchSides=false;
 			}
@@ -146,57 +147,57 @@ public class TerritoryWarsPanel extends JPanel{
 			
 			// Draw Own Character (controlled by this computer) 
 			g.setColor(Color.blue);
-			g.fillRect((int)Math.round(dblPlayerX[0]), (int)Math.round(dblPlayerY[0]), intPlayerWidth, intPlayerHeight);
+			g.fillRect((int)Math.round(dblPlayerX), (int)Math.round(dblPlayerY), intPlayerWidth, intPlayerHeight);
 			
 			// Character healthbar
 			g.setColor(Color.red);
-			g.fillRect((int)(Math.round(dblPlayerX[0]) - 10), (int)(Math.round(dblPlayerY[0]) - 10), (int)dblHealthBarWidth, intHealthBarHeight);			
+			g.fillRect((int)(Math.round(dblPlayerX) - 10), (int)(Math.round(dblPlayerY) - 10), (int)dblHealthBarWidth, intHealthBarHeight);			
 			g.setColor(Color.green);
-			g.fillRect((int)(Math.round(dblPlayerX[0]) - 10), (int)(Math.round(dblPlayerY[0]) - 10), (int)(dblHealth[0]*dblHealthBarMultiplier), intHealthBarHeight);
+			g.fillRect((int)(Math.round(dblPlayerX) - 10), (int)(Math.round(dblPlayerY) - 10), (int)(dblHealth*dblHealthBarMultiplier), intHealthBarHeight);
 			
 			//Opponent healthbar
 			g.setColor(Color.red);
-			g.fillRect(intOppX - 10,intOppY - 10, (int)Math.round(dblHealthBarWidth), intHealthBarHeight);			
+			g.fillRect(intOppX - 10,intOppY - 10, (int)dblHealthBarWidth, intHealthBarHeight);			
 			g.setColor(Color.green);
-			g.fillRect(intOppX - 10, intOppY - 10, (int)Math.round(dblOppHealth*dblHealthBarMultiplier), intHealthBarHeight);
-			
+			g.fillRect(intOppX - 10, intOppY - 10, (int)(dblOppHealth*dblHealthBarMultiplier), intHealthBarHeight);
+
 			//Healths can't drop below 0
-			if(dblHealth[0] <= 0){
-				dblHealth[0] = 0;
+			if(dblHealth <= 0){
+				dblHealth = 0;
 			}
 			if(dblOppHealth <= 0){
 				dblOppHealth = 0;
 			}
 			
 			// Movement restrictions
-			if(dblPlayerX[0] <= 0){
-				dblPlayerX[0] = 0;
+			if(dblPlayerX <= 0){
+				dblPlayerX = 0;
 			}
-			if(dblPlayerX[0] > (1280 - intPlayerWidth)){
-				dblPlayerX[0] = 1280 - intPlayerWidth;
+			if(dblPlayerX > (1280 - intPlayerWidth)){
+				dblPlayerX = 1280 - intPlayerWidth;
 			}
-			if(dblPlayerY[0] < 0){
-				dblPlayerY[0] = 0;
+			if(dblPlayerY < 0){
+				dblPlayerY = 0;
 			}
 			
 			try{
 				// Move Left
 				if(blnPlayerLeft){
 					if(strMap[intPlayerTopRow][intPlayerLeftEdgeCol].equals("s")){
-						dblPlayerX[0]-=intPlayerSpeed;
+						dblPlayerX-=intPlayerSpeed;
 					}else{
 						blnPlayerLeft=false;
-						dblPlayerX[0]+=2;
+						dblPlayerX+=2;
 					}
 				}
 				
 				//Move Right
 				if(blnPlayerRight){
 					if(strMap[intPlayerTopRow][intPlayerRightEdgeCol].equals("s")){
-						dblPlayerX[0]+=intPlayerSpeed;
+						dblPlayerX+=intPlayerSpeed;
 					}else{
 						blnPlayerRight=false;
-						dblPlayerX[0]-=2;
+						dblPlayerX-=2;
 					}
 				}
 				
@@ -212,23 +213,23 @@ public class TerritoryWarsPanel extends JPanel{
 						blnDrop=true;
 						dblPlayerJump=6;
 					}else{
-						dblPlayerY[0]-=4*dblPlayerJump;
+						dblPlayerY-=4*dblPlayerJump;
 						dblPlayerJump-=0.5;
 					}
 				}
 				
 				// Establish variables for collision
-				intPlayerTopRow=(int)(dblPlayerY[0]/40); // Row number of the player's head
-				intPlayerBottomRow=(int)((dblPlayerY[0]+intPlayerHeight)/40); // Row number of player's feet
-				intPlayerLeftEdgeCol=(int)(dblPlayerX[0]/40); // Column number of player's left side
-				intPlayerRightEdgeCol=(int)((dblPlayerX[0]+intPlayerWidth)/40); // Column number of player's right side
+				intPlayerTopRow=(int)(dblPlayerY/40); // Row number of the player's head
+				intPlayerBottomRow=(int)((dblPlayerY+intPlayerHeight)/40); // Row number of player's feet
+				intPlayerLeftEdgeCol=(int)(dblPlayerX/40); // Column number of player's left side
+				intPlayerRightEdgeCol=(int)((dblPlayerX+intPlayerWidth)/40); // Column number of player's right side
 				
 				// Land the Jump
 				if(strMap[intPlayerBottomRow][intPlayerLeftEdgeCol].equals("g")
 				|| strMap[intPlayerBottomRow][intPlayerRightEdgeCol].equals("g")){
 					blnJump=false;
 					dblPlayerJump=6;
-					dblPlayerY[0]=(intPlayerBottomRow*40)-intPlayerHeight;
+					dblPlayerY=(intPlayerBottomRow*40)-intPlayerHeight;
 				}
 				// Falling
 				if(blnJump==false){
@@ -237,31 +238,31 @@ public class TerritoryWarsPanel extends JPanel{
 						blnDrop=false;
 					}else{
 						blnDrop=true;
-						dblPlayerY[0]+=10;
+						dblPlayerY+=10;
 					}
 				}
 			}
 			// Player dies
 			catch(ArrayIndexOutOfBoundsException e){
-				dblPlayerY[0] = 1000;
-				dblHealth[0] = 0;
+				dblPlayerY = 1000;
+				dblHealth = 0;
 			}
 			
 			// Displacement
 			g.setColor(Color.LIGHT_GRAY);
 			g.fillRect(20, 20, 300, 40);
 			
-			intDisplacement = (int)(dblOrigin[0] - dblPlayerX[0]);
+			intDisplacement = (int)(dblOrigin - dblPlayerX);
 			
-			if(dblOrigin[0] - dblPlayerX[0] < 0){
-				intDisplacement = -(int)(dblOrigin[0] - dblPlayerX[0]);
+			if(dblOrigin - dblPlayerX < 0){
+				intDisplacement = -(int)(dblOrigin - dblPlayerX);
 			}
 			
 			if(intDisplacement > 300){
 				intDisplacement = 300;
-				if(dblOrigin[0] - dblPlayerX[0] < 0){
+				if(dblOrigin - dblPlayerX < 0){
 					blnPlayerRight = false;
-				}else if(dblOrigin[0] - dblPlayerX[0] > 0){
+				}else if(dblOrigin - dblPlayerX > 0){
 					blnPlayerLeft = false;
 				}
 			} 
@@ -272,15 +273,15 @@ public class TerritoryWarsPanel extends JPanel{
 		// Draw laser (constant length of dblLaserLength)
 			g.setColor(Color.red);
 			// Find angle
-			dblLaserAngle = Math.atan2(dblMouseY-dblPlayerY[0], dblMouseX-dblPlayerX[0]);
+			dblLaserAngle = Math.atan2(dblMouseY-dblPlayerY, dblMouseX-dblPlayerX);
 			// Find rise and run using trig
 			dblLaserRise = dblLaserLength*Math.sin(dblLaserAngle);
 			dblLaserRun = dblLaserLength*Math.cos(dblLaserAngle);
 			// Find coordinates of the laser's endpoint
-			dblLaserX = dblPlayerX[0]+dblLaserRun;
-			dblLaserY = dblPlayerY[0]+dblLaserRise;
+			dblLaserX = dblPlayerX+dblLaserRun;
+			dblLaserY = dblPlayerY+dblLaserRise;
 			// Draw
-			g.drawLine((int)Math.round(dblPlayerX[0]),(int)Math.round(dblPlayerY[0]),
+			g.drawLine((int)Math.round(dblPlayerX),(int)Math.round(dblPlayerY),
 			(int)Math.round(dblLaserX),(int)Math.round(dblLaserY));
 			
 			// Fire bullet
@@ -309,7 +310,7 @@ public class TerritoryWarsPanel extends JPanel{
 					intBulletHeight = intGrenadeHeight;
 					intBulletSpeed = intGrenadeSpeed;
 					intBulletDamage = intGrenadeDamage;
-					dblBulletAngle = Math.atan2(dblMouseY-dblPlayerY[0], dblMouseX-dblPlayerX[0]);
+					dblBulletAngle = Math.atan2(dblMouseY-dblPlayerY, dblMouseX-dblPlayerX);
 					dblBulletRise = -dblPower*Math.sin(dblBulletAngle);
 					dblBulletRun = dblPower*Math.cos(dblBulletAngle);
 					blnGetSlope=false;
@@ -329,9 +330,11 @@ public class TerritoryWarsPanel extends JPanel{
 			// Fire bullet, keep drawing unless it hits a player	
 			if(blnBulletDisappear==false){
 				g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,intBulletWidth,intBulletHeight);
+				System.out.println("HIIIIIIIIIIII");
 			}else{
 				dblBulletX=-20;
 				dblBulletY=-20;
+				System.out.println("disappear true");
 			}
 			
 			// Bullet collision
@@ -368,7 +371,7 @@ public class TerritoryWarsPanel extends JPanel{
 		}
 		
 		// Victory/Defeat screens
-		if(dblHealth[0] == 0){
+		if(dblHealth == 0){
 			g.setColor(Color.black);
 			g.fillRect(0, 0, 1280, 720);
 			g.setColor(Color.red);
@@ -376,7 +379,7 @@ public class TerritoryWarsPanel extends JPanel{
 		}else if(dblOppHealth == 0){
 			g.setColor(Color.black);
 			g.fillRect(0, 0, 1280, 720);
-			g.setColor(Color.red);
+			g.setColor(Color.green);
 			g.drawString("Victory", 40, 40);
 		}
 		
@@ -385,20 +388,6 @@ public class TerritoryWarsPanel extends JPanel{
 
 	public TerritoryWarsPanel(){
 		super();
-		
-		dblPlayerX = new double[3];
-		dblPlayerY = new double[3];
-		dblOrigin = new double[3];
-		dblHealth = new double[3];
-		
-		dblPlayerX[0]=50;
-		dblPlayerY[0]=100;
-		dblOrigin[0]=dblPlayerX[0];
-		dblHealth[0] = 100;
-		
-		dblOppHealth = 100;
-		
-		dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0]; // Multiplier for health bar
 		
 		// Load map csv 
 		strMap = new String[18][32];
