@@ -2,7 +2,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
+import java.awt.image.*;
 public class TerritoryWars implements ActionListener, MouseListener, MouseMotionListener, KeyListener{
 	// Networking Variables
 	String strName;
@@ -110,7 +110,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				panel.add(inputIP);
 			}
 			
-			
 			// Remove Buttons
 			panel.remove(host);
 			panel.remove(client);
@@ -154,7 +153,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				start.setLocation(580,600);
 				start.addActionListener(this);
 				panel.add(start);
-				start.setEnabled(false);
+				//start.setEnabled(false);
 				
 				// Host has the first turn
 				blnTurn = true;
@@ -271,6 +270,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			}else if(strData.substring(0,1).equals("h")){
 				strData=strData.substring(1,strData.length());
 				panel.dblHealth[0]=Double.parseDouble(strData);
+				System.out.println(strData);
 			// Game Start data
 			}else if(strData.equals("s") && blnHost==false){
 				panel.blnStartGame=true;
@@ -323,7 +323,14 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			panel.blnGrenade = false;
 			grenade.setEnabled(false);
 			stopbut.setEnabled(false);
+			// Transparent 16 x 16 pixel cursor image.
+			BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+			Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+				cursorImg, new Point(0, 0), "blank cursor");
+			// Set the blank cursor
+			frame.getContentPane().setCursor(blankCursor);
 			panel.requestFocus();
+		
 			
 		// Grenade button
 		}else if(evt.getSource() == grenade){
@@ -382,6 +389,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				panel.blnGrenade = false;
 				stopbut.setText("Stop");
 				ssm.sendText("switch");
+				panel.setCursor(Cursor.getDefaultCursor());
 				if(blnTurn){
 					blnTurn = false;
 					stopbut.setEnabled(false);
@@ -411,6 +419,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 					panel.blnFire=true;
 					panel.blnGetSlope=true;
 					panel.blnBulletDisappear = false;
+					panel.blnBulletDisappear=false;
 					panel.requestFocus();
 					blnShoot = true;
 					sniper.setEnabled(false); 

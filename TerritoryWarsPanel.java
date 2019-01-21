@@ -104,7 +104,7 @@ public class TerritoryWarsPanel extends JPanel{
 	BufferedImage menu;
 	BufferedImage help; 
 	boolean blnHelpMenu = false; 
-	
+	boolean blnShowCursor;
 	// Graphics
 	public void paintComponent(Graphics g){	
 		
@@ -156,10 +156,10 @@ public class TerritoryWarsPanel extends JPanel{
 			
 			//Opponent healthbar
 			g.setColor(Color.red);
-			g.fillRect(intOppX - 10,intOppY - 10, (int)dblHealthBarWidth, intHealthBarHeight);			
+			g.fillRect(intOppX - 10,intOppY - 10, (int)Math.round(dblHealthBarWidth), intHealthBarHeight);			
 			g.setColor(Color.green);
-			g.fillRect(intOppX - 10, intOppY - 10, (int)(dblOppHealth*dblHealthBarMultiplier), intHealthBarHeight);
-
+			g.fillRect(intOppX - 10, intOppY - 10, (int)Math.round(dblOppHealth*dblHealthBarMultiplier), intHealthBarHeight);
+			
 			//Healths can't drop below 0
 			if(dblHealth[0] <= 0){
 				dblHealth[0] = 0;
@@ -376,7 +376,7 @@ public class TerritoryWarsPanel extends JPanel{
 		}else if(dblOppHealth == 0){
 			g.setColor(Color.black);
 			g.fillRect(0, 0, 1280, 720);
-			g.setColor(Color.green);
+			g.setColor(Color.red);
 			g.drawString("Victory", 40, 40);
 		}
 		
@@ -393,10 +393,10 @@ public class TerritoryWarsPanel extends JPanel{
 		
 		dblPlayerX[0]=50;
 		dblPlayerY[0]=100;
-		dblOrigin[0]=dblPlayerX[0]; // Should this be in the loop?
+		dblOrigin[0]=dblPlayerX[0];
 		dblHealth[0] = 100;
 		
-		dblOppHealth = 100; // Make all starting healths the same
+		dblOppHealth = 100;
 		
 		dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0]; // Multiplier for health bar
 		
