@@ -247,6 +247,8 @@ public class TerritoryWarsPanel extends JPanel{
 				dblPlayerY = 1000;
 				dblHealth = 0;
 			}
+			
+			
 			if(dblPlayerY>=720){
 				dblHealth=0;
 			}
@@ -379,7 +381,7 @@ public class TerritoryWarsPanel extends JPanel{
 			g.fillRect(0, 0, 1280, 720);
 			g.setColor(Color.red);
 			g.drawString("Defeat", 40, 40);
-		}else if(dblOppHealth==0){
+		}else if(dblOppHealth==0 || intOppY >=720){
 			g.setColor(Color.black);
 			g.fillRect(0, 0, 1280, 720);
 			g.setColor(Color.green);
@@ -429,7 +431,7 @@ public class TerritoryWarsPanel extends JPanel{
 		}
 					
 		try{
-			sky = ImageIO.read(new File("water.jpg"));	
+			sky = ImageIO.read(new File("sky.jpg"));	
 		}catch(IOException e){
 			System.out.println("Unable to load sky image");
 		}
