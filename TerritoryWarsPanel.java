@@ -3,7 +3,7 @@ import java.awt.*;
 import java.io.*;
 import javax.imageio.*;
 import java.awt.image.*;
-//figure out how to fix the shooting, then switch turns and should be all goood
+
 public class TerritoryWarsPanel extends JPanel{
 	
 // Variables
@@ -14,23 +14,23 @@ public class TerritoryWarsPanel extends JPanel{
 	
 	// Bullet
 	boolean blnFire=false;
-	double dblBulletX;
-	double dblBulletY;
+	double dblBulletX=-50;
+	double dblBulletY=-50;
 	double dblBulletAngle; //Angle in radians
 	boolean blnGetSlope=true; //to get the slope once per click only
 	double dblBulletRise;
 	double dblBulletRun;
-	int intSpeed=4;
-	boolean blnFireReady = true;
-	int intDamage;
+	int intBulletSpeed;
+	int intBulletDamage;
 	boolean blnBulletDisappear;
-	int intDiameter=10;
+	int intBulletWidth;
+	int intBulletHeight;
 	int intBulletTopRow;
 	int intBulletBottomRow;
 	int intBulletLeftEdgeCol;
 	int intBulletRightEdgeCol;
 	
-	// Laser
+	// Aiming laser
 	double dblLaserAngle;
 	double dblLaserLength=50;
 	double dblLaserRise;
@@ -38,8 +38,22 @@ public class TerritoryWarsPanel extends JPanel{
 	double dblLaserX=-20;
 	double dblLaserY=-20;
 	
+	// Sniper
+	int intSniperWidth;
+	int intSniperHeight;
+	int intSniperSpeed;
+	int intSniperDamage;
+	FileReader sniper = null;
+	BufferedReader sniperdata = null;
+	
 	// Grenade
 	double dblPower=5;
+	int intGrenadeWidth;
+	int intGrenadeHeight;
+	int intGrenadeSpeed;
+	int intGrenadeDamage;
+	FileReader grenade = null;
+	BufferedReader grenadedata = null;
 	
 	// Map
 	BufferedImage wood;
@@ -79,8 +93,8 @@ public class TerritoryWarsPanel extends JPanel{
 	double dblOppHealth;
 	int intOppX=1200;
 	int intOppY=100;
-	int intOppBulletX;
-	int intOppBulletY;
+	int intOppBulletX = -50;
+	int intOppBulletY = -50;
 	
 	int intTurn=0;
 	int intDisplacement;
@@ -94,6 +108,7 @@ public class TerritoryWarsPanel extends JPanel{
 	
 	// Graphics
 	public void paintComponent(Graphics g){	
+		
 		g.setColor(Color.white);
 		g.fillRect(0,0,1280,800);
 		
@@ -105,7 +120,6 @@ public class TerritoryWarsPanel extends JPanel{
 		}
 		
 		if(blnStartGame){
-		//	System.out.println(dblPlayerY[0]);
 			g.setColor(Color.white);
 			g.fillRect(0,0,1280,800);
 		
@@ -120,18 +134,16 @@ public class TerritoryWarsPanel extends JPanel{
 				}
 			}
 			
-			// Switch sides at start of game
 			if(blnSwitchSides && blnHost==false){
 				dblPlayerX[0]=1200;
 				dblOrigin[0]=1200;
 				intOppX=0;
 				blnSwitchSides=false;
 			}
-			
+			//System.out.println(dblOppHealth);
 			// Draw Opponent
 			g.setColor(Color.pink);
 			g.fillRect(intOppX, intOppY, intPlayerWidth, intPlayerHeight);
-			//System.out.println(intOppX+", "+intOppY);
 			
 			// Draw Own Character (controlled by this computer) 
 			g.setColor(Color.blue);
@@ -165,73 +177,76 @@ public class TerritoryWarsPanel extends JPanel{
 			if(dblPlayerY[0] < 0){
 				dblPlayerY[0] = 0;
 			}
-
-			// Move Left
-			if(blnPlayerLeft){
-				if(strMap[intPlayerTopRow][intPlayerLeftEdgeCol].equals("s")){
-					dblPlayerX[0]-=intPlayerSpeed;
-				}else{
-					blnPlayerLeft=false;
-					dblPlayerX[0]+=2;
+			
+			try{
+				// Move Left
+				if(blnPlayerLeft){
+					if(strMap[intPlayerTopRow][intPlayerLeftEdgeCol].equals("s")){
+						dblPlayerX[0]-=intPlayerSpeed;
+					}else{
+						blnPlayerLeft=false;
+						dblPlayerX[0]+=2;
+					}
 				}
-			}
-			
-			//Move Right
-			if(blnPlayerRight){
-				if(strMap[intPlayerTopRow][intPlayerRightEdgeCol].equals("s")){
-					dblPlayerX[0]+=intPlayerSpeed;
-				}else{
-					blnPlayerRight=false;
-					dblPlayerX[0]-=2;
+				
+				//Move Right
+				if(blnPlayerRight){
+					if(strMap[intPlayerTopRow][intPlayerRightEdgeCol].equals("s")){
+						dblPlayerX[0]+=intPlayerSpeed;
+					}else{
+						blnPlayerRight=false;
+						dblPlayerX[0]-=2;
+					}
 				}
-			}
-			
-			if(blnDrop){
-				blnJump=false;
-			}
-			
-			// Jumping
-			if(blnJump && blnDrop==false){
-				if(strMap[intPlayerTopRow][intPlayerLeftEdgeCol].equals("g")
-				|| strMap[intPlayerTopRow][intPlayerRightEdgeCol].equals("g")){
+				
+				if(blnDrop){
 					blnJump=false;
-					blnDrop=true;
-					dblPlayerJump=6;
-				}else{
-					dblPlayerY[0]-=4*dblPlayerJump;
-					dblPlayerJump-=0.5;
 				}
-			}
-			
-			// Establish variables for collision
-			intPlayerTopRow=(int)(dblPlayerY[0]/40); // Row number of the player's head
-			intPlayerBottomRow=(int)((dblPlayerY[0]+intPlayerHeight)/40); // Row number of player's feet
-			intPlayerLeftEdgeCol=(int)(dblPlayerX[0]/40); // Column number of player's left side
-			intPlayerRightEdgeCol=(int)((dblPlayerX[0]+intPlayerWidth)/40); // Column number of player's right side
-			
-			// Land the Jump
-			if(strMap[intPlayerBottomRow][intPlayerLeftEdgeCol].equals("g")
-			|| strMap[intPlayerBottomRow][intPlayerRightEdgeCol].equals("g")){
-				blnJump=false;
-				dblPlayerJump=6;
-				dblPlayerY[0]=(intPlayerBottomRow*40)-intPlayerHeight;
-			}
-			// Falling
-			if(blnJump==false){
+				
+				// Jumping
+				if(blnJump && blnDrop==false){
+					if(strMap[intPlayerTopRow][intPlayerLeftEdgeCol].equals("g")
+					|| strMap[intPlayerTopRow][intPlayerRightEdgeCol].equals("g")){
+						blnJump=false;
+						blnDrop=true;
+						dblPlayerJump=6;
+					}else{
+						dblPlayerY[0]-=4*dblPlayerJump;
+						dblPlayerJump-=0.5;
+					}
+				}
+				
+				// Establish variables for collision
+				intPlayerTopRow=(int)(dblPlayerY[0]/40); // Row number of the player's head
+				intPlayerBottomRow=(int)((dblPlayerY[0]+intPlayerHeight)/40); // Row number of player's feet
+				intPlayerLeftEdgeCol=(int)(dblPlayerX[0]/40); // Column number of player's left side
+				intPlayerRightEdgeCol=(int)((dblPlayerX[0]+intPlayerWidth)/40); // Column number of player's right side
+				
+				// Land the Jump
 				if(strMap[intPlayerBottomRow][intPlayerLeftEdgeCol].equals("g")
 				|| strMap[intPlayerBottomRow][intPlayerRightEdgeCol].equals("g")){
-					blnDrop=false;
-				}else{
-					blnDrop=true;
-					dblPlayerY[0]+=10;
+					blnJump=false;
+					dblPlayerJump=6;
+					dblPlayerY[0]=(intPlayerBottomRow*40)-intPlayerHeight;
 				}
+				// Falling
+				if(blnJump==false){
+					if(strMap[intPlayerBottomRow][intPlayerLeftEdgeCol].equals("g")
+					|| strMap[intPlayerBottomRow][intPlayerRightEdgeCol].equals("g")){
+						blnDrop=false;
+					}else{
+						blnDrop=true;
+						dblPlayerY[0]+=10;
+					}
+				}
+			}
+			catch(ArrayIndexOutOfBoundsException e){
+				System.out.println("Player died");
 			}
 			
 			// Displacement
 			g.setColor(Color.LIGHT_GRAY);
 			g.fillRect(20, 20, 300, 40);
-			g.setColor(Color.LIGHT_GRAY);
-			g.fillRect(960, 20, 300, 40);
 			
 			intDisplacement = (int)(dblOrigin[0] - dblPlayerX[0]);
 			
@@ -269,6 +284,10 @@ public class TerritoryWarsPanel extends JPanel{
 			if(blnFire){
 				// Line
 				if(blnGetSlope && blnSniper){
+					intBulletWidth = intSniperWidth;
+					intBulletHeight = intSniperHeight;
+					intBulletSpeed = intSniperSpeed;
+					intBulletDamage = intSniperDamage;
 					/*
 					 * Angle between horizontal and the imaginary line (player to cursor) is found using arctangent
 					 * Rise is found using sine
@@ -278,11 +297,15 @@ public class TerritoryWarsPanel extends JPanel{
 					 * hypotenuse (intSpeed) is constant for any slope
 					 */
 					dblBulletAngle = Math.atan2(dblMouseY-dblBulletY, dblMouseX-dblBulletX);
-					dblBulletRise = intSpeed*Math.sin(dblBulletAngle);
-					dblBulletRun = intSpeed*Math.cos(dblBulletAngle);
+					dblBulletRise = intBulletSpeed*Math.sin(dblBulletAngle);
+					dblBulletRun = intBulletSpeed*Math.cos(dblBulletAngle);
 					blnGetSlope=false; //Only get slope again when the next click happens
 				}
 				if(blnGetSlope && blnGrenade){
+					intBulletWidth = intGrenadeWidth;
+					intBulletHeight = intGrenadeHeight;
+					intBulletSpeed = intGrenadeSpeed;
+					intBulletDamage = intGrenadeDamage;
 					dblBulletAngle = Math.atan2(dblMouseY-dblPlayerY[0], dblMouseX-dblPlayerX[0]);
 					dblBulletRise = -dblPower*Math.sin(dblBulletAngle);
 					dblBulletRun = dblPower*Math.cos(dblBulletAngle);
@@ -299,44 +322,49 @@ public class TerritoryWarsPanel extends JPanel{
 					dblBulletRise-=0.05;
 				}
 			}
-			// Fire bullet, keep drawing unless it hits a player	
+							// Fire bullet, keep drawing unless it hits a player	
 			if(blnBulletDisappear==false){
-				g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,intDiameter,intDiameter);
+				g.fillOval((int)Math.round(dblBulletX)-5,(int)Math.round(dblBulletY)-5,intBulletWidth,intBulletHeight);
 			}else{
 				dblBulletX=-20;
 				dblBulletY=-20;
 			}
 			
 			// Once bullet is fired, player can only move after bullet leaves screen
-			// CHANGE TO ONCE BULLET LEAVES SCREEN OR HITS SOMETHING
-			// Player can hold a key and shoot!?
-			if(dblBulletX < 0 || dblBulletX > 1280 || dblBulletY < 0 || dblBulletY > 720){
-				blnFireReady = true;
+			if(dblBulletX+intBulletWidth  < 0 || dblBulletX > 1280 || dblBulletY+intBulletHeight < 0 || dblBulletY > 720){
+				blnBulletDisappear=true;
 			}	
 			
 			// Bullet collision
 			//	Touches character
-			if(dblBulletX+intDiameter >= intOppX && dblBulletX <= intOppX + intPlayerWidth
-			&& dblBulletY >= intOppY && dblBulletY <= intOppY + intPlayerHeight){
-				dblOppHealth-=intDamage;
+			if(dblBulletX+intBulletWidth >= intOppX && dblBulletX <= intOppX + intPlayerWidth
+			&& dblBulletY+intBulletHeight >= intOppY && dblBulletY <= intOppY + intPlayerHeight){
+				dblOppHealth-=intBulletDamage;
 				blnBulletDisappear=true;
+				System.out.println(intBulletDamage);
+				
 			}
 			
 			intBulletTopRow=(int)(dblBulletY/40); // Row number of the top of the bullet
-			intBulletBottomRow=(int)((dblBulletY+intDiameter)/40); // Row number of the bottom of the bullet
-			intBulletLeftEdgeCol=(int)(dblBulletX/40); // Column number of player's left side
-			intBulletRightEdgeCol=(int)((dblBulletX+intDiameter)/40); // Column number of player's right side
-			//	Touches ground block
-			if(strMap[intBulletTopRow][intBulletLeftEdgeCol].equals("g")
-			|| strMap[intBulletTopRow][intBulletRightEdgeCol].equals("g")
-			|| strMap[intBulletBottomRow][intBulletLeftEdgeCol].equals("g")
-			|| strMap[intBulletBottomRow][intBulletRightEdgeCol].equals("g")){
-				blnBulletDisappear=true;	
+			intBulletBottomRow=(int)((dblBulletY+intBulletHeight)/40); // Row number of the bottom of the bullet
+			intBulletLeftEdgeCol=(int)(dblBulletX/40); // Column number of bullet's left side
+			intBulletRightEdgeCol=(int)((dblBulletX+intBulletWidth)/40); // Column number of bullet's right side
+			
+			try{
+				//	Touches ground block
+				if(strMap[intBulletTopRow][intBulletLeftEdgeCol].equals("g")
+				|| strMap[intBulletTopRow][intBulletRightEdgeCol].equals("g")
+				|| strMap[intBulletBottomRow][intBulletLeftEdgeCol].equals("g")
+				|| strMap[intBulletBottomRow][intBulletRightEdgeCol].equals("g")){
+					blnBulletDisappear=true;	
+				}
 			}
+			catch(ArrayIndexOutOfBoundsException e){}
 			
 			// Draw Opponent's bullet
 			g.setColor(Color.RED);
-			g.fillOval(intOppBulletX, intOppBulletY, intDiameter, intDiameter);
+			g.fillOval(intOppBulletX, intOppBulletY, intBulletWidth, intBulletHeight);
+			
 		}
 	}
 
@@ -355,8 +383,9 @@ public class TerritoryWarsPanel extends JPanel{
 		
 		dblOppHealth = dblHealth[0]; // Make all starting healths the same
 		
-		dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0];
-		// Load map csv
+		dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0]; // Multiplier for health bar
+		
+		// Load map csv 
 		strMap = new String[18][32];
 		
 		try{
@@ -379,7 +408,14 @@ public class TerritoryWarsPanel extends JPanel{
 			}	
 		}
 		
-		// import map images
+		//Close map file after reading
+		try{
+			map.close();
+		}catch(IOException e){
+			System.out.println("Unable to close map file");
+		}
+		
+		// Import map images
 		try{
 			wood = ImageIO.read(new File("wood.jpg"));		
 		}catch(IOException e){
@@ -391,19 +427,86 @@ public class TerritoryWarsPanel extends JPanel{
 		}catch(IOException e){
 			System.out.println("Unable to load sky image");
 		}
-		// import main menu 
+		
+		// Import main menu image
 		try{ 
 			menu = ImageIO.read(new File("Main Menu.jpg")); 
 		}catch(IOException e){ 
 			System.out.println("Unable to load main menu image"); 
 		}
 		
-		// import help menu 
+		// Import help menu image
 		try{ 
 			help = ImageIO.read(new File("Help.jpg")); 
 		}catch(IOException e){ 
 			System.out.println("Unable to load help menu image"); 
 		}
+		
+		// Import data files for weapons:
+		
+		// Sniper (file order: width, height, speed, damage)
+		try{
+			sniper = new FileReader("sniper.txt");
+		}catch(FileNotFoundException e){
+			System.out.println("Error! Could not find sniper file.");
+		}
+		
+		sniperdata = new BufferedReader(sniper);
+		
+		try{
+			intSniperWidth = Integer.parseInt(sniperdata.readLine());
+			intSniperHeight = Integer.parseInt(sniperdata.readLine());
+			intSniperSpeed = Integer.parseInt(sniperdata.readLine());
+			intSniperDamage = Integer.parseInt(sniperdata.readLine());
+		}catch(IOException e){
+			System.out.println("Unable to read from sniper file");
+		}catch(NumberFormatException e){ //Set default values if a number is missing
+			System.out.println("Unable to read from sniper file, setting default values");
+			intSniperWidth = 10;
+			intSniperHeight = 10;
+			intSniperSpeed = 30;
+			intSniperDamage = 10;
+		}
+		
+		//Close sniper file after reading
+		try{
+			sniper.close();
+		}catch(IOException e){
+			System.out.println("Unable to close sniper file");
+		}
+		
+		// Grenade (file order: width, height, speed, damage)
+		try{
+			grenade = new FileReader("grenade.txt");
+		}catch(FileNotFoundException e){
+			System.out.println("Error! Could not find grenade file.");
+		}
+		
+		grenadedata = new BufferedReader(grenade);
+		
+		try{
+			intGrenadeWidth = Integer.parseInt(grenadedata.readLine());
+			intGrenadeHeight = Integer.parseInt(grenadedata.readLine());
+			intGrenadeSpeed = Integer.parseInt(grenadedata.readLine());
+			intGrenadeDamage = Integer.parseInt(grenadedata.readLine());
+		}catch(IOException e){
+			System.out.println("Unable to read from grenade file");
+		}catch(NumberFormatException e){ //Set default values if a number is missing
+			System.out.println("Unable to read from grenade file, setting default values");
+			intGrenadeWidth = 15;
+			intGrenadeHeight = 15;
+			intGrenadeSpeed = 10;
+			intGrenadeDamage = 20;
+		}
+
+		//Close grenade file after reading
+		try{
+			grenade.close();
+		}catch(IOException e){
+			System.out.println("Unable to close grenade file");
+		}
+		
+		
 	}
 	
 }
