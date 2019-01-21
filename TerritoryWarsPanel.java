@@ -22,7 +22,7 @@ public class TerritoryWarsPanel extends JPanel{
 	double dblBulletRun;
 	int intBulletSpeed;
 	int intBulletDamage;
-	boolean blnBulletDisappear;
+	boolean blnBulletDisappear=false;
 	int intBulletWidth;
 	int intBulletHeight;
 	int intBulletTopRow;
@@ -376,7 +376,7 @@ public class TerritoryWarsPanel extends JPanel{
 		}else if(dblOppHealth == 0){
 			g.setColor(Color.black);
 			g.fillRect(0, 0, 1280, 720);
-			g.setColor(Color.red);
+			g.setColor(Color.green);
 			g.drawString("Victory", 40, 40);
 		}
 		
@@ -396,7 +396,7 @@ public class TerritoryWarsPanel extends JPanel{
 		dblOrigin[0]=dblPlayerX[0]; // Should this be in the loop?
 		dblHealth[0] = 100;
 		
-		dblOppHealth = dblHealth[0]; // Make all starting healths the same
+		dblOppHealth = 100; // Make all starting healths the same
 		
 		dblHealthBarMultiplier = dblHealthBarWidth/dblHealth[0]; // Multiplier for health bar
 		

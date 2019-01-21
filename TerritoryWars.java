@@ -48,7 +48,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			if(panel.blnStartGame){
 				ssm.sendText("p"+(int)Math.round(panel.dblPlayerX[0])+","+(int)Math.round(panel.dblPlayerY[0]));
 				ssm.sendText("b"+(int)Math.round(panel.dblBulletX)+","+(int)Math.round(panel.dblBulletY));
-				ssm.sendText("h"+(int)Math.round(panel.dblHealth[0]));
+				ssm.sendText("h"+(int)Math.round(panel.dblOppHealth));
 			}
 		}
 		
@@ -154,7 +154,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 				start.setLocation(580,600);
 				start.addActionListener(this);
 				panel.add(start);
-				//start.setEnabled(false); UNCOMMENT THIS LATER
+				start.setEnabled(false);
 				
 				// Host has the first turn
 				blnTurn = true;
@@ -270,8 +270,7 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 			// Health Bar data
 			}else if(strData.substring(0,1).equals("h")){
 				strData=strData.substring(1,strData.length());
-				panel.dblOppHealth=Double.parseDouble(strData);
-				System.out.println(strData);
+				panel.dblHealth[0]=Double.parseDouble(strData);
 			// Game Start data
 			}else if(strData.equals("s") && blnHost==false){
 				panel.blnStartGame=true;
@@ -412,7 +411,6 @@ public class TerritoryWars implements ActionListener, MouseListener, MouseMotion
 					panel.blnFire=true;
 					panel.blnGetSlope=true;
 					panel.blnBulletDisappear = false;
-					panel.blnBulletDisappear=false;
 					panel.requestFocus();
 					blnShoot = true;
 					sniper.setEnabled(false); 
