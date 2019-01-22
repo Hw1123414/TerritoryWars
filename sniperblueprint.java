@@ -1,6 +1,6 @@
+// Blueprint for sniper bullet
 import java.io.*;
 
-// Blueprint for sniper bullet
 public class sniperblueprint{
 
 	// Properties
@@ -28,7 +28,7 @@ public class sniperblueprint{
 	
 	/** Get sniper bullet damage */
 	public int getDamage(){
-		return intDamage;
+		return this.intDamage;
 	}
 	
 	/** Construct sniper with integer values of width, height, speed, and damage */
@@ -69,10 +69,5 @@ public class sniperblueprint{
 		}catch(IOException e){
 			System.out.println("Unable to close sniper file");
 		}
-		
-		intWidth = intWidth;
-		intHeight = intHeight;
-		intSpeed = intSpeed;
-		intDamage = intDamage;
 	}
 }

@@ -1,6 +1,7 @@
+// Blueprint for grenade
 import java.io.*;
 
-// Blueprint for grenade
+
 public class grenadeblueprint{
 
 	// Properties
@@ -57,8 +58,8 @@ public class grenadeblueprint{
 			System.out.println("Unable to read from grenade file");
 		}catch(NumberFormatException e){ //Set default values if a number is missing
 			System.out.println("Unable to read from grenade file, setting default values");
-			this.intWidth = 15;
-			this.intHeight = 15;
+			this.intWidth = 10;
+			this.intHeight = 10;;
 			this.intSpeed = 10;
 			this.intDamage = 20;
 		}
